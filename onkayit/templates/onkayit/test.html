@@ -1,21 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% for ogrenci in ogrenciler%}
-        <h1>{{ ogrenci.ad }} {{ ogrenci.soyad }}</h1>
-        <h2>Öğrenci no: {{ ogrenci.id }}</h2>
-        <h2>Kayıt Tarihi: {{ ogrenci.kayıt_tarihi}}</h2>
-    {% endfor %}
+{% extends 'onkayit/base.html' %}
 
-    <form class="ogrenci_formu" method="POST">{% csrf_token %}
-        {{ ogrenci_formu.as_p }}
-        <button type="submit" class="save btn btn-default">Save</button>
-    </form>
+{% block content %}
+{% for ogrenci in ogrenciler%}
+    <h1>{{ ogrenci.ad }} {{ ogrenci.soyad }}</h1>
+    <h2>Öğrenci no: {{ ogrenci.id }}</h2>
+    <h2>Kayıt Tarihi: {{ user.username }}</h2>
+{% endfor %}
 
-</body>
-</html>
+<form class="ogrenci_formu" method="POST">{% csrf_token %}
+    {{ ogrenci_formu.as_p }}
+    <button type="submit" class="save btn btn-default">Save</button>
+</form>
+{% endblock %}

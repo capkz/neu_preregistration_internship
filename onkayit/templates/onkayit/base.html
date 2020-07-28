@@ -13,7 +13,7 @@
   <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
       <div class="navbar-nav">
-        <a class="nav-link nav-details" style="color:white;" href="#">Merhaba User
+        <a class="nav-link nav-details" style="color:white;" href="#">Merhaba {{ user.username }}
       </div>
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,8 +48,9 @@
       </div>
 
     </nav>
-    <div style="height:100%" style>
-
+    <div style="height:100vh;border:1px solid red">
+      {% block content %}
+      {% endblock %}
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
