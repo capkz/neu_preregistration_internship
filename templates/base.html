@@ -11,39 +11,48 @@
     <link rel="stylesheet" href="{% static 'css/onkayit.css' %}">
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-      <div class="navbar-nav">
-        <a class="nav-link nav-details" style="color:white;" href="#">Merhaba {{ user.username }}
-      </div>
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-        <ul class="navbar-nav"> {# Left #}
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Anasayfa<span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Önkayıt</a>
-          </li>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item {% if nbar == 'home' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'home' %}">Anasayfa<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item {% if nbar == 'on_kayit' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'on_kayit' %}">Önkayıt</a>
+            </li>
         </ul>
-        <ul class="navbar-nav"> {# Middle #}
-          <a class="navbar-brand" href="#"> <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Near_East_University.svg/1200px-Near_East_University.svg.png" width="30" height="30" class="d-inline-block align-top" alt=""> Near East College</a>
+    </div>
+    <div class="mx-auto order-0">
+        <a class="navbar-brand" href="#"> 
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Near_East_University.svg/1200px-Near_East_University.svg.png" 
+        width="30" height="30" class="d-inline-block align-top" alt=""> 2020-2021 Near East College
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item active">
+                <a class="nav-link nav-details" style="color:white;" href="#">Merhaba {{ user.username }}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Çıkış</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Giriş<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Kayıt</a>
+            </li>
+          {% endif %}
         </ul>
-        <ul class="navbar-nav"> {# Right #}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Giriş<span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Kayıt</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Çıkış</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    </div>
+</nav>
+
+
     <section>
       <div class="container form-container">
         {% block content %}

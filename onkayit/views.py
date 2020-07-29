@@ -5,7 +5,7 @@ from .forms import ogrenci_formu
 from django.shortcuts import redirect, get_object_or_404
 
 def ogrenci_bilgileri(request):
-    return render(request, 'onkayit/ogrenci_bilgileri.html')
+    return render(request, 'onkayit/ogrenci_bilgileri.html', {'nbar': 'on_kayit'})
 
 
 def test(request):
