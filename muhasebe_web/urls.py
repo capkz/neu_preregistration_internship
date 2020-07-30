@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include('main.urls')),
     path('onkayit/', include('onkayit.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('ogrenci/', include('ogrenci.urls')),
 ]
