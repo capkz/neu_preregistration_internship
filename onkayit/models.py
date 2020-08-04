@@ -22,7 +22,7 @@ class ogrenci(models.Model):
     cep_tel = models.CharField(max_length=15)
     ev_tel = models.CharField(max_length=15)
     genel_bilgi = models.TextField()
-    sağlik_bilgisi = models.TextField()
+    sağlık_bilgisi = models.TextField()
     kayıt_tarihi = models.DateTimeField(default=timezone.now())
     yabancı_dil = models.CharField(max_length=15) 
     kayıt_kabul = models.CharField(max_length=10, choices=kayit_sekilleri)
