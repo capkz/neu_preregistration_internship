@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="px-1 py-2">Student Search</h2>
+<div class="container">
+    <div class="py-3 row">
+        <div class="form-group">
+            <form type="get" action="." class="form-inline">
+                <input type="number" class="mx-3 form-control" name="q"  placeholder="Search by ID" required>
+                <button class="btn btn-default" type="submit" >Ara</button>
+            </form>
+        </div>
+    </div>
+    <div class="py-4 px-1 row">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                    <th scope="col">Registration Date</th>
+                    <th scope="col">Scholarship</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students%}
+                    <tr>
+                        <th scope="row">{{student.id}}</th>
+                        <td>{{student.name}}</td>
+                        <td>{{student.surname}}</td>
+                        <td>{{student.registration_date}}</td>
+                        <td>{{student.scholarship}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

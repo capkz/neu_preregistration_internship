@@ -7,8 +7,8 @@
     <h2>Kayıt Tarihi: {{ user.username }}</h2>
 {% endfor %}
 
-<form class="ogrenci_formu" method="POST">{% csrf_token %}
-    {{ ogrenci_formu.as_p }}
+<form class="student_form" method="POST">{% csrf_token %}
+    {{ student_form.as_p }}
     <button type="submit" class="save btn btn-default">Save</button>
 </form>
 {% endblock %}

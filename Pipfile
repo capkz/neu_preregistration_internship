@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 Django = "*"
+django-formtools = "*"
 
 [dev-packages]
 

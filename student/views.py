@@ -1,21 +1,21 @@
 from django.shortcuts import render
 from django.utils import timezone
 from django.shortcuts import redirect, get_object_or_404
-from .forms import ogrenci_arama
-from onkayit.models import ogrenci
+from .forms import student_search
+from preregistration.models import student
 import pdb
 
-def ogrenci_listesi(request):
+def student_list(request):
     if request.method == 'GET' and 'q' in request.GET:
         q = request.GET.get('q')
         if q is '':
-            return redirect('ogrenci_listesi')
+            return redirect('student_list')
         else:
-            ogrenciler = ogrenci.objects.filter(id=q)
-            return render(request, 'ogrenci/ogrenci_listesi.html', {'ogrenciler': ogrenciler})
+            students = student.objects.filter(id=q)
+            return render(request, 'student/student_list.html', {'students': students})
     else:
-        ogrenciler = ogrenci.objects.all()
-        return render(request, 'ogrenci/ogrenci_listesi.html', {'ogrenciler': ogrenciler})
+        students = student.objects.all()
+        return render(request, 'student/student_list.html', {'students': students})
 
 
 
