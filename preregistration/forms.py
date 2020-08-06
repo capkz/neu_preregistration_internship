@@ -8,3 +8,4 @@ class student_information_form(forms.ModelForm):
         'birth_date','nationality','blood_type','adress','area','phone_number',
         'home_phone_number','general_information','medical_information','foreign_language',
         'registration_type','previous_school','scholarship',)
+

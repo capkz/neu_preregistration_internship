@@ -1,14 +1,75 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% for ogrenci in ogrenciler%}
-    <h1>{{ ogrenci.ad }} {{ ogrenci.soyad }}</h1>
-    <h2>Öğrenci no: {{ ogrenci.id }}</h2>
-    <h2>Kayıt Tarihi: {{ user.username }}</h2>
-{% endfor %}
+<style>
+    fieldset {
+        position:relative;
+    }
 
+    fieldset:not(:first-of-type){
+        display: none;
+    }
+    .active_form {
+        background: #dbdbdb
+    }
+</style>
 <form class="student_form" method="POST">{% csrf_token %}
-    {{ student_form.as_p }}
-    <button type="submit" class="save btn btn-default">Save</button>
+    <div class="d-flex justify-content-around border-bottom mb-2">
+        <button type="button" class="btn btn-default steps active_form" id="f_form">Student Details</button>
+        <button type="button" class="btn btn-default steps" id="s_form">Family Details</button>
+        <button type="button" class="btn btn-default steps" id="l_form">Transportation Details</button>
+    </div>
+    <fieldset id="std_details">
+        <legend>Student Details</legend>
+        <label for="fname">First name:</label>
+        <input type="text" id="fname" name="fname">
+        <br><br>
+        <input type="button" name="next" class="next btn btn-default" value="Next" />
+    </fieldset>
+    <fieldset id="family_details">
+        <legend>Family Details</legend>
+        <label for="fname">First name:</label>
+        <input type="text" id="fname" name="fname"><br><br>
+        <input type="button" name="previous" class="previous btn btn-default" value="Previous" />
+        <input type="button" name="next" class="next btn btn-default" value="Next" />
+    </fieldset>
+    <fieldset id="transport_details">
+        <legend>Transportation Details</legend>
+        <label for="fname">First name:</label>
+        <input type="text" id="fname" name="fname"><br><br>
+        <input type="button" name="previous" class="previous btn btn-default" value="Previous" />
+        <input type="Submit" name="Submit" class="btn btn-default" value="Submit" />
+    </fieldset>
 </form>
+
+<script>
+    var current_fs, next_fs, previous_fs;
+    var current_step, next_step, previous_step;
+    
+
+    $(".next").click(function(){
+        current_fs = $(this).parent();
+        next_fs = $(this).parent().next();
+        current_step = $('.active_form');
+        next_step = current_step.next();
+
+        current_fs.hide();
+        current_step.removeClass('active_form');
+        next_fs.show();
+        next_step.addClass('active_form');
+
+    })
+
+    $(".previous").click(function(){
+        current_fs = $(this).parent();
+        previous_fs = $(this).parent().prev();
+        current_step = $('.active_form');
+        previous_step = current_step.prev();
+
+        current_fs.hide();
+        current_step.removeClass('active_form');
+        previous_fs.show();
+        previous_step.addClass('active_form');
+    })
+</script>
 {% endblock %}
