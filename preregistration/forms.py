@@ -1,11 +1,17 @@
 from django import forms
-from .models import student
+from .models import student, parents, siblings, transportation, pickup_backup, disposable
 
 class student_information_form(forms.ModelForm):
     class Meta:
         model = student
-        fields = ('name','surname','id_no','sex','birth_place',
-        'birth_date','nationality','blood_type','adress','area','phone_number',
-        'home_phone_number','general_information','medical_information','foreign_language',
-        'registration_type','previous_school','scholarship',)
+        fields = '__all__'
 
+class family_information_form(forms.ModelForm):
+    class Meta:
+        model = parents
+        fields = '__all__'
+
+class disposable_form(forms.ModelForm):
+    class Meta:
+        model = disposable
+        fields = '__all__'

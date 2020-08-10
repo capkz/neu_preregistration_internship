@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <style>
     fieldset {
         position:relative;
@@ -13,32 +14,34 @@
         background: #dbdbdb
     }
 </style>
-<form class="student_form" method="POST">{% csrf_token %}
-    <div class="d-flex justify-content-around border-bottom mb-2">
-        <button type="button" class="btn btn-default steps active_form" id="f_form">Student Details</button>
-        <button type="button" class="btn btn-default steps" id="s_form">Family Details</button>
-        <button type="button" class="btn btn-default steps" id="l_form">Transportation Details</button>
+<form class="student_form" id="student_form" enctype="multipart/form-data" method="POST">{% csrf_token %}
+    <div class="d-flex justify-content-around border-bottom mb-2" id="step_btns">
+        <button type="button" class="btn btn-default steps active_form" id="f_btn">Student Details</button>
+        <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
+        <button type="button" class="btn btn-default steps" id="l_btn">Transportation Details</button>
     </div>
+    <div id="feedbackmessage"></div>
     <fieldset id="std_details">
         <legend>Student Details</legend>
-        <label for="fname">First name:</label>
-        <input type="text" id="fname" name="fname">
+        {{ student_form.as_p }}
         <br><br>
+        <p style="color:red;">{{ student_form.errors }}</p>
         <input type="button" name="next" class="next btn btn-default" value="Next" />
+        <input type="submit" name="Submit" class="btn btn-default" value="Submit" />
     </fieldset>
     <fieldset id="family_details">
         <legend>Family Details</legend>
-        <label for="fname">First name:</label>
-        <input type="text" id="fname" name="fname"><br><br>
+        <br><br>
         <input type="button" name="previous" class="previous btn btn-default" value="Previous" />
         <input type="button" name="next" class="next btn btn-default" value="Next" />
+        <input type="submit" name="Submit" class="btn btn-default" value="Submit" />
     </fieldset>
     <fieldset id="transport_details">
         <legend>Transportation Details</legend>
         <label for="fname">First name:</label>
         <input type="text" id="fname" name="fname"><br><br>
         <input type="button" name="previous" class="previous btn btn-default" value="Previous" />
-        <input type="Submit" name="Submit" class="btn btn-default" value="Submit" />
+        <input type="submit" name="Submit" class="btn btn-default" value="Submit" />
     </fieldset>
 </form>
 
@@ -46,6 +49,51 @@
     var current_fs, next_fs, previous_fs;
     var current_step, next_step, previous_step;
     
+    $(document).on('submit','#student_form',function(e){
+        e.preventDefault();
+
+        $.ajax({
+            type:'POST',
+            data:{
+                name:$('#id_name').val(),
+                surname:$('#id_surname').val(),
+                birth_date:$('#id_birth_date').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(response){
+                console.log(response);
+                if(response['error']) {
+                    $("#feedbackmessage").html("<div class='alert alert-danger'>" +
+			            response['error']['comment'] +"</div>");
+                };
+            },
+            error:function (request,status,error){
+                console.log(request.responseText);
+            },
+        });
+    });
+
+
+    $(".steps").click(function(e){ 
+        clicked_btn = "#"+e.target.id;
+        $(".student_form").children().hide();
+        switch(clicked_btn){
+            case "#f_btn":
+                var show_fs = "#std_details";
+                break;
+            case "#s_btn":
+                var show_fs = "#family_details";
+                break;
+            case "#l_btn":
+                var show_fs = "#transport_details";
+                break;
+            default:
+                alert("Case didnt work");
+        }
+        $(show_fs).show();
+        $("#step_btns").children().removeClass("active_form");
+        $(clicked_btn).addClass("active_form");
+    })
 
     $(".next").click(function(){
         current_fs = $(this).parent();
