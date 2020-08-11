@@ -107,4 +107,11 @@ class pickup_backup(models.Model):
 class disposable(models.Model):
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
+    email = models.EmailField(max_length = 50) 
     birth_date = models.DateField()
+    
+class disposable_parents(models.Model):
+    name = models.CharField(max_length=30)
+    surname = models.CharField(max_length=30)
+    birth_date = models.DateField()
+

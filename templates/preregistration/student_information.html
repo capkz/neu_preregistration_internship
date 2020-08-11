@@ -20,17 +20,41 @@
         <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
         <button type="button" class="btn btn-default steps" id="l_btn">Transportation Details</button>
     </div>
-    <div id="feedbackmessage"></div>
+    <div class="container">
+        <div class="row">
+            <ul class="col-4" id="feedbackmessage"></ul>
+        </div>
+    </div>
     <fieldset id="std_details">
         <legend>Student Details</legend>
-        {{ student_form.as_p }}
+        <p>
+            {{ student_form.name.label}}
+            {{ student_form.name}}
+        </p>
+        <p>
+            {{ student_form.surname.label}}
+            {{ student_form.surname}}
+        </p>
+        <p>
+            {{ student_form.email.label}}
+            {{ student_form.email}}
+        </p>
+        <p>
+            {{ student_form.birth_date.label}}
+            {{ student_form.birth_date}}
+        </p>
         <br><br>
-        <p style="color:red;">{{ student_form.errors }}</p>
         <input type="button" name="next" class="next btn btn-default" value="Next" />
-        <input type="submit" name="Submit" class="btn btn-default" value="Submit" />
+        <input type="submit" name="submit_student_details" class="btn btn-default" value="Submit"/>
     </fieldset>
     <fieldset id="family_details">
         <legend>Family Details</legend>
+        <div>
+            <legend>Mom</legend>
+        </div>
+        <div>
+            <legend>Dad</legend>
+        </div>
         <br><br>
         <input type="button" name="previous" class="previous btn btn-default" value="Previous" />
         <input type="button" name="next" class="next btn btn-default" value="Next" />
@@ -49,43 +73,50 @@
     var current_fs, next_fs, previous_fs;
     var current_step, next_step, previous_step;
     
-    $(document).on('submit','#student_form',function(e){
-        e.preventDefault();
+    function titleCase(str) {
+        var splitStr = str.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+        }
+        return splitStr.join(' '); 
+    }
 
+    $(document).on('submit','#student_form',function(e){
+        var button_id = '#'+e.target.id;
+        e.preventDefault();
+        $("#feedbackmessage").empty();
         $.ajax({
             type:'POST',
-            data:{
-                name:$('#id_name').val(),
-                surname:$('#id_surname').val(),
-                birth_date:$('#id_birth_date').val(),
-                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-            },
+            data:{formData: $(button_id).parent().find('input').serialize(),
+                  csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                  button: e.target.name,
+                  },
             success:function(response){
                 console.log(response);
                 if(response['error']) {
-                    $("#feedbackmessage").html("<div class='alert alert-danger'>" +
-			            response['error']['comment'] +"</div>");
-                };
-            },
-            error:function (request,status,error){
-                console.log(request.responseText);
-            },
+                    for(var key in response.error){
+                        var field_name = key.replace("_"," ");
+                        console.log('[error] for ' + key + ': ' + response.error[key][0]);
+                    }
+                }
+            }
         });
     });
 
 
     $(".steps").click(function(e){ 
+        var show_fs;
         clicked_btn = "#"+e.target.id;
         $(".student_form").children().hide();
         switch(clicked_btn){
             case "#f_btn":
-                var show_fs = "#std_details";
+                show_fs = "#std_details";
                 break;
             case "#s_btn":
-                var show_fs = "#family_details";
+                show_fs = "#family_details";
                 break;
             case "#l_btn":
-                var show_fs = "#transport_details";
+                show_fs = "#transport_details";
                 break;
             default:
                 alert("Case didnt work");
