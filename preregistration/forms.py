@@ -1,5 +1,5 @@
 from django import forms
-from .models import student, parents, siblings, transportation, pickup_backup, disposable, disposable_parents
+from .models import student, parents, siblings, transportation, pickup_backup, disposable, disposable_parents, disposable_transportation
 
 class student_information_form(forms.ModelForm):
     class Meta:
@@ -19,4 +19,9 @@ class disposable_form(forms.ModelForm):
 class disposable_parents_form(forms.ModelForm):
     class Meta:
         model = disposable_parents
+        fields = '__all__'
+        
+class disposable_transportation_form(forms.ModelForm):
+    class Meta:
+        model = disposable_transportation
         fields = '__all__'

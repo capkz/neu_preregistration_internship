@@ -14,16 +14,16 @@
         background: #dbdbdb
     }
 </style>
+<div class="container">
+        <div class="row">
+            <ul class="col-4" id="feedbackmessage"></ul>
+        </div>
+    </div>
 <form class="student_form" id="student_form" enctype="multipart/form-data" method="POST">{% csrf_token %}
     <div class="d-flex justify-content-around border-bottom mb-2" id="step_btns">
         <button type="button" class="btn btn-default steps active_form" id="f_btn">Student Details</button>
         <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
         <button type="button" class="btn btn-default steps" id="l_btn">Transportation Details</button>
-    </div>
-    <div class="container">
-        <div class="row">
-            <ul class="col-4" id="feedbackmessage"></ul>
-        </div>
     </div>
     <fieldset id="std_details">
         <legend>Student Details</legend>
@@ -44,28 +44,48 @@
             {{ student_form.birth_date}}
         </p>
         <br><br>
-        <input type="button" name="next" class="next btn btn-default" value="Next" />
-        <input type="submit" name="submit_student_details" class="btn btn-default" value="Submit"/>
+        <input type="submit" id="submit_student_details" class="next btn btn-default" value="Next"/>
     </fieldset>
     <fieldset id="family_details">
         <legend>Family Details</legend>
         <div>
             <legend>Mom</legend>
+            <p>
+                {{ disposable_parents_form.name.label}}
+                {{ disposable_parents_form.name}}
+            </p>
+            <p>
+                {{ disposable_parents_form.surname.label}}
+                {{ disposable_parents_form.surname}}
+            </p>
+            <p>
+                {{ disposable_parents_form.email.label}}
+                {{ disposable_parents_form.email}}
+            </p>
+            <p>
+                {{ disposable_parents_form.birth_date.label}}
+                {{ disposable_parents_form.birth_date}}
+            </p>
         </div>
         <div>
             <legend>Dad</legend>
         </div>
         <br><br>
-        <input type="button" name="previous" class="previous btn btn-default" value="Previous" />
-        <input type="button" name="next" class="next btn btn-default" value="Next" />
-        <input type="submit" name="Submit" class="btn btn-default" value="Submit" />
+        <input type="submit" id="submit_parent_details" class="previous btn btn-default" value="Previous"/>
+        <input type="submit" id="submit_parent_details" class="next btn btn-default" value="Next"/>
     </fieldset>
     <fieldset id="transport_details">
         <legend>Transportation Details</legend>
-        <label for="fname">First name:</label>
-        <input type="text" id="fname" name="fname"><br><br>
-        <input type="button" name="previous" class="previous btn btn-default" value="Previous" />
-        <input type="submit" name="Submit" class="btn btn-default" value="Submit" />
+            <p>
+                {{ disposable_parents_form.name.label}}
+                {{ disposable_parents_form.name}}
+            </p>
+            <p>
+                {{ disposable_transportation_form.pickup_date.label}}
+                {{ disposable_transportation_form.pickup_date}}
+            </p>
+        <input type="submit" id="submit_transportation_details" class="previous btn btn-default" value="Previous"/>
+        <input type="submit" id="complete_registration" class="next btn btn-default" value="Complete Registration"/>
     </fieldset>
 </form>
 
@@ -79,26 +99,36 @@
             splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
         }
         return splitStr.join(' '); 
-    }
+    }   
 
-    $(document).on('submit','#student_form',function(e){
+    $('input[type="submit"]').click(function(e){
         var button_id = '#'+e.target.id;
         e.preventDefault();
         $("#feedbackmessage").empty();
-        $.ajax({
+        var formInputs = $(button_id).parent().find('input').serialize();
+        console.log(formInputs);
+        $.ajax({    
             type:'POST',
-            data:{formData: $(button_id).parent().find('input').serialize(),
-                  csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                  button: e.target.name,
-                  },
+            data:formInputs+'&csrfmiddlewaretoken='+$('input[name=csrfmiddlewaretoken]').val()+'&buttonName='+e.target.id,
             success:function(response){
                 console.log(response);
-                if(response['error']) {
+                if(response['error']) { 
                     for(var key in response.error){
                         var field_name = key.replace("_"," ");
                         console.log('[error] for ' + key + ': ' + response.error[key][0]);
-                    }
+                        $("#feedbackmessage").append("<li class='alert alert-danger my-1 py-1'>" +
+                            titleCase(field_name) + ': ' + response.error[key][0] +"</li>");
+                        }
+                } else if (response['success']) {
+                    console.log('succesfully submitted.');
+                    if(e.target.value == 'Next')
+                        next_form(button_id);
+                    else if(e.target.value == 'Previous')
+                        previous_form(button_id);
                 }
+            },
+            error:function (request,status,error){
+                console.log(request.responseText);
             }
         });
     });
@@ -126,9 +156,9 @@
         $(clicked_btn).addClass("active_form");
     })
 
-    $(".next").click(function(){
-        current_fs = $(this).parent();
-        next_fs = $(this).parent().next();
+    function next_form(buttonID){
+        current_fs = $(buttonID).parent();
+        next_fs = $(buttonID).parent().next();
         current_step = $('.active_form');
         next_step = current_step.next();
 
@@ -137,11 +167,11 @@
         next_fs.show();
         next_step.addClass('active_form');
 
-    })
+    }
 
-    $(".previous").click(function(){
-        current_fs = $(this).parent();
-        previous_fs = $(this).parent().prev();
+    function previous_form(buttonID){
+        current_fs = $(buttonID).parent();
+        previous_fs = $(buttonID).parent().prev();
         current_step = $('.active_form');
         previous_step = current_step.prev();
 
@@ -149,6 +179,6 @@
         current_step.removeClass('active_form');
         previous_fs.show();
         previous_step.addClass('active_form');
-    })
+    }
 </script>
 {% endblock %}

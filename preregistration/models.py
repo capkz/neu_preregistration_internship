@@ -111,7 +111,12 @@ class disposable(models.Model):
     birth_date = models.DateField()
     
 class disposable_parents(models.Model):
+    related = models.ForeignKey('disposable', on_delete=models.CASCADE, blank=True)
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
     birth_date = models.DateField()
 
+class disposable_transportation(models.Model):
+    related = models.ForeignKey('disposable', on_delete=models.CASCADE, blank=True)
+    name = models.CharField(max_length=30)
+    pickup_date = models.DateField()
