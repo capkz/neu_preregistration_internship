@@ -1,65 +1,81 @@
 from django.shortcuts import render
 from django.utils import timezone
-from .forms import student_information_form, disposable_form, parents_form, disposable_form, disposable_parents_form, disposable_transportation_form
-from .models import student, disposable, parents, disposable_parents, disposable_transportation
+from .forms import student_form, parent_form, sibling_form, transportation_form, pickup_backup_form
+from .models import student, parent, sibling, transportation, pickup_backup
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 
 def student_information(request):
-    id = 0
     disposable_response = 0
     print("request")
     if request.method == "POST":
         print("request is post")
         buttonName = request.POST['buttonName']
-        if buttonName == 'submit_student_details': #If student_details button is pressed
+        if buttonName == 'complete_registration':
+            if (request.session.pop('1') == True and request.session.pop('2') == True and request.session.pop('3') == True):
+                student = student_form(request.session.pop('student_form')).save()
+                student_id = student.id
+                parent_details = request.session.pop('parent_form')
+                parent_details['related_student']= student_id
+                transportation_details = request.session.pop('transportation_form')
+                transportation_details['related_student']= student_id
+                parent_form(parent_details).save()
+                transportation_form(transportation_details).save()
+            else:
+                error = {
+                    'error': {0 : "Please fill all the forms"}
+                }
+                return JsonResponse({'error':error})
+        
+        elif buttonName == 'submit_student_details': #If student_details button is pressed
             print('rn in submit_student_details')
-            disposable_form_request = disposable_form(request.POST,request.FILES or None)
-            if disposable_form_request.is_valid():
-                request.session['disposable_form'] = request.POST
+            student_form_request = student_form(request.POST,request.FILES or None)
+            if student_form_request.is_valid():
+                request.session['student_form'] = request.POST.copy()
+                request.session['1'] = True
                 return JsonResponse({'success':True})
             else:
                 print("ERROR")  
-                return JsonResponse({'error':disposable_form_request.errors})
+                return JsonResponse({'error':student_form_request.errors})
         
         elif buttonName == 'submit_parent_details':
             print('rn in submit parents')
-            disposable_parents_form_request = disposable_parents_form(request.POST,request.FILES or None)
-            if disposable_parents_form_request.is_valid():
-                request.session['disposable_parents_form'] = request.POST
+            parent_form_request = parent_form(request.POST,request.FILES or None)
+            if parent_form_request.is_valid():
+                request.session['parent_form'] = request.POST.copy()
+                request.session['2'] = True
                 return JsonResponse({'success':True})
             else:
                 print("ERROR")
-                return JsonResponse({'error':disposable_parents_form_request.errors})
+                return JsonResponse({'error':parent_form_request.errors})
         
-        elif buttonName == 'complete_registration':
+        elif buttonName == 'submit_transportation_details':
             print('rn in submit transportation')
-            disposable_transportation_form_request = disposable_transportation_form(request.POST,request.FILES or None)
-            if disposable_transportation_form_request.is_valid():
-                disposable_transportation_details = request.POST
-                student = disposable_form(request.session.get('disposable_form')).save()
-                student_id = student.id
-                disposable_parents_details = request.session.get('disposable_parents_form')
-                disposable_parents_details['related']= student_id
-                disposable_transportation_details['related']= student_id
-                disposable_parents_form(disposable_parents_details).save()
-                disposable_transportation_form(disposable_transportation_details).save()
+            transportation_form_request = transportation_form(request.POST,request.FILES or None)
+            if transportation_form_request.is_valid():
+                request.session['transportation_form'] = request.POST.copy()
+                request.session['3'] = True
+                return JsonResponse({'success':True})
             else:
                 print("ERROR")
-                return JsonResponse({'error':disposable_transportation_form_request.errors})
+                return JsonResponse({'error':transportation_form_request.errors})
         
         else:
             print("no submit button in POST")
        
     else:
         print("outter else if")
-        disposable_form_request = disposable_form()
-        disposable_parents_form_request = disposable_parents_form()
-        disposable_transportation_form_request = disposable_transportation_form()
-    return render(request, 'preregistration/student_information.html', {'student_form': disposable_form_request,
-                                                                        'disposable_parents_form': disposable_parents_form_request,
-                                                                        'disposable_transportation_form': disposable_transportation_form_request})
-
+        student_form_request = student_form()
+        parent_form_request = parent_form()
+        transportation_form_request = transportation_form()
+        sibling_form_request = sibling_form()
+        pickup_backup_form_request = pickup_backup_form()
+        return render(request, 'preregistration/student_information.html', {'student_form': student_form_request,
+                                                                        'parent_form': parent_form_request,
+                                                                        'transportation_form': transportation_form_request,
+                                                                        'sibling_form': sibling_form_request,
+                                                                        'pickup_backup_form': pickup_backup_form_request})
+ 
     # print("request")
     # if request.method == "POST":
     #     print("request is post")

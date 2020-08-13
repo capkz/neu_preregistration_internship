@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load myfilters %}
 {% block content %}
 
 <style>
@@ -7,12 +7,30 @@
         position:relative;
     }
 
+    .btn-default {
+        border
+    }
+
     fieldset:not(:first-of-type){
         display: none;
     }
-    .active_form {
-        background: #dbdbdb
+    
+    .successful_form {
+        background: #C8F5C0;
     }
+
+    .error_form {
+        background: #F5C6CB;
+    }
+
+    .active_form {
+        background: #dbdbdb;
+    }
+
+    .submit {
+        font-weight: bold;
+    }
+
 </style>
 <div class="container">
         <div class="row">
@@ -25,74 +43,81 @@
         <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
         <button type="button" class="btn btn-default steps" id="l_btn">Transportation Details</button>
     </div>
-    <fieldset id="std_details">
+    <fieldset class='form-group' id="std_details">
         <legend>Student Details</legend>
-        <p>
-            {{ student_form.name.label}}
-            {{ student_form.name}}
-        </p>
-        <p>
-            {{ student_form.surname.label}}
-            {{ student_form.surname}}
-        </p>
-        <p>
-            {{ student_form.email.label}}
-            {{ student_form.email}}
-        </p>
-        <p>
-            {{ student_form.birth_date.label}}
-            {{ student_form.birth_date}}
-        </p>
-        <br><br>
-        <input type="submit" id="submit_student_details" class="next btn btn-default" value="Next"/>
+        <div class='forms'>
+            <p>
+                {{ student_form.name.label|addcss:"error_form"}}
+                {{ student_form.name}}
+            </p>
+            <p>
+                {{ student_form.surname.label}}
+                {{ student_form.surname}}
+            </p>
+            <p>
+                {{ student_form.email.label}}
+                {{ student_form.email}}
+            </p>
+            <p>
+                {{ student_form.birth_date.label}}
+                {{ student_form.birth_date}}
+            </p>
+        </div>
+        <input type="submit" id="submit_student_details" class="next btn btn-outline-dark" value="Next"/>
     </fieldset>
-    <fieldset id="family_details">
+    <fieldset class='form-group' id="family_details">
         <legend>Family Details</legend>
-        <div>
-            <legend>Mom</legend>
-            <p>
-                {{ disposable_parents_form.name.label}}
-                {{ disposable_parents_form.name}}
-            </p>
-            <p>
-                {{ disposable_parents_form.surname.label}}
-                {{ disposable_parents_form.surname}}
-            </p>
-            <p>
-                {{ disposable_parents_form.email.label}}
-                {{ disposable_parents_form.email}}
-            </p>
-            <p>
-                {{ disposable_parents_form.birth_date.label}}
-                {{ disposable_parents_form.birth_date}}
-            </p>
+        <div  class='forms'>
+            <div >
+                <legend>Mom</legend>
+                <p>
+                    {{ disposable_parents_form.name.label}}
+                    {{ disposable_parents_form.name}}
+                </p>
+                <p>
+                    {{ disposable_parents_form.surname.label}}
+                    {{ disposable_parents_form.surname}}
+                </p>
+                <p>
+                    {{ disposable_parents_form.email.label}}
+                    {{ disposable_parents_form.email}}
+                </p>
+                <p>
+                    {{ disposable_parents_form.birth_date.label}}
+                    {{ disposable_parents_form.birth_date}}
+                </p>
+            </div>
+            <div>
+                <legend>Dad</legend>
+            </div>
         </div>
-        <div>
-            <legend>Dad</legend>
-        </div>
-        <br><br>
-        <input type="submit" id="submit_parent_details" class="previous btn btn-default" value="Previous"/>
-        <input type="submit" id="submit_parent_details" class="next btn btn-default" value="Next"/>
+        <input type="submit" id="submit_parent_details" class="previous btn btn-outline-dark" value="Previous"/>
+        <input type="submit" id="submit_parent_details" class="next btn btn-outline-dark" value="Next"/>
     </fieldset>
-    <fieldset id="transport_details">
+    <fieldset class='form-group' id="transport_details">
         <legend>Transportation Details</legend>
-            <p>
-                {{ disposable_parents_form.name.label}}
-                {{ disposable_parents_form.name}}
-            </p>
-            <p>
-                {{ disposable_transportation_form.pickup_date.label}}
-                {{ disposable_transportation_form.pickup_date}}
-            </p>
-        <input type="submit" id="submit_transportation_details" class="previous btn btn-default" value="Previous"/>
-        <input type="submit" id="complete_registration" class="next btn btn-default" value="Complete Registration"/>
+            <div class='forms'>
+                <p>
+                    {{ disposable_parents_form.name.label}}
+                    {{ disposable_parents_form.name}}
+                </p>
+                <p>
+                    {{ disposable_transportation_form.pickup_date.label}}
+                    {{ disposable_transportation_form.pickup_date}}
+                </p>
+            </div>
+        <input type="submit" id="submit_transportation_details" class="previous btn btn-outline-dark" value="Previous"/>
+        <input type="submit" id="submit_transportation_details" class="next btn btn-outline-dark" value="Submit"/>
     </fieldset>
 </form>
-
+    <div class="d-flex border-top mt-2 pt-2 justify-content-center">
+        <input type="submit" id="complete_registration" class="next btn btn-outline-dark submit" value="Complete Registration"/>
+    </div>
 <script>
     var current_fs, next_fs, previous_fs;
     var current_step, next_step, previous_step;
-    
+
+    $('.forms').children().find('input').addClass('form-control');
     function titleCase(str) {
         var splitStr = str.toLowerCase().split(' ');
         for (var i = 0; i < splitStr.length; i++) {
@@ -112,7 +137,26 @@
             data:formInputs+'&csrfmiddlewaretoken='+$('input[name=csrfmiddlewaretoken]').val()+'&buttonName='+e.target.id,
             success:function(response){
                 console.log(response);
+                switch(button_id){
+                        case "#submit_student_details":
+                            var tabButton = "#f_btn";
+                            break;
+                        case "#submit_parent_details":
+                            var tabButton = "#s_btn";
+                            break;
+                        case "#submit_transportation_details":
+                            var tabButton = "#l_btn";
+                            break;
+                        case "#complete_registration":
+                            var tabButton = "#l_btn";
+                            break;
+                        default:
+                            alert("Case didnt work");
+                    }
                 if(response['error']) { 
+                    var content = $(tabButton).html();
+                    $(tabButton).html(content.replace(" ✓",""));
+                    $(tabButton).removeClass('successful_form');
                     for(var key in response.error){
                         var field_name = key.replace("_"," ");
                         console.log('[error] for ' + key + ': ' + response.error[key][0]);
@@ -121,8 +165,14 @@
                         }
                 } else if (response['success']) {
                     console.log('succesfully submitted.');
-                    if(e.target.value == 'Next')
+
+                    if($(tabButton).html().indexOf('✓') == -1){
+                        $(tabButton).append(' ✓');
+                        $(tabButton).addClass('successful_form');
+                    }
+                    if(e.target.value == 'Next'){
                         next_form(button_id);
+                        }
                     else if(e.target.value == 'Previous')
                         previous_form(button_id);
                 }

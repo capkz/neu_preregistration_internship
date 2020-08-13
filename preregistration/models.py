@@ -50,7 +50,7 @@ class student(models.Model):
     def __str__(self):
         return self.name+" "+self.surname
 
-class parents(models.Model):
+class parent(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
@@ -71,7 +71,7 @@ class parents(models.Model):
     def __str__(self):
         return self.related_student
 
-class siblings(models.Model):
+class sibling(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
     full_name = models.CharField(max_length=50)
     registered_school = models.CharField(max_length=20,choices=schools)

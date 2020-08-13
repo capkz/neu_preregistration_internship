@@ -1,27 +1,27 @@
 from django import forms
-from .models import student, parents, siblings, transportation, pickup_backup, disposable, disposable_parents, disposable_transportation
+from .models import student, parent, sibling, transportation, pickup_backup
 
-class student_information_form(forms.ModelForm):
+class student_form(forms.ModelForm):
     class Meta:
         model = student
         fields = '__all__'
 
-class parents_form(forms.ModelForm):
+class parent_form(forms.ModelForm):
     class Meta:
-        model = parents
+        model = parent
         fields = '__all__'
 
-class disposable_form(forms.ModelForm):
+class sibling_form(forms.ModelForm):
     class Meta:
-        model = disposable
+        model = sibling
         fields = '__all__'
         
-class disposable_parents_form(forms.ModelForm):
+class transportation_form(forms.ModelForm):
     class Meta:
-        model = disposable_parents
+        model = transportation
         fields = '__all__'
         
-class disposable_transportation_form(forms.ModelForm):
+class pickup_backup_form(forms.ModelForm):
     class Meta:
-        model = disposable_transportation
-        fields = '__all__'
+        model = pickup_backup
+        fields = '__all__'      
