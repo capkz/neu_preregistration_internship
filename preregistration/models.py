@@ -16,11 +16,12 @@ ways = [('to school','To School'),('fromschool','From School'),('both ways','Bot
 areas = [('gazimağusa','Gazimağusa'),('güzelyurt','Güzelyurt'),('girne','Girne'),('lefkoşa','Lefkoşa'),('lefke','Lefke')]
 
 class student(models.Model):
-    photo = models.ImageField()
+    photo = models.ImageField()     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     student_status = models.CharField(max_length=20, choices=student_stasuses)
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=(30))
+    email = models.EmailField(max_length = 50)
     id_no = models.CharField(max_length=20) 
     sex = models.CharField(max_length=5, choices=sexes)
     birth_place = models.CharField(max_length=15)    

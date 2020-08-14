@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% load myfilters %}
+
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+{% endblock scripts %}
 {% block content %}
 
 <style>
@@ -31,6 +37,19 @@
         font-weight: bold;
     }
 
+    #demo-basic {
+        width: 200px;
+        height: 300px;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .avatar img {
+        width: 200px;
+        height: 200px;
+        padding: 5px;
+    }
+
 </style>
 <div class="container">
         <div class="row">
@@ -46,21 +65,30 @@
     <fieldset class='form-group' id="std_details">
         <legend>Student Details</legend>
         <div class='forms'>
+
             <p>
-                {{ student_form.name.label|addcss:"error_form"}}
-                {{ student_form.name}}
+                {{ student_form.photo.label}}
+                <div class='avatar'>
+                    <img id='avatar_frame' src="https://i0.wp.com/ahfirstaid.org/wp-content/uploads/2014/07/avatar-placeholder.png?fit=204%2C204">
+                </div>
+                {{ student_form.photo|addcss:"form-control-file"}}
+            </p>
+
+            <p>
+                {{ student_form.name.label}}
+                {{ student_form.name|addcss:"form-control"}}
             </p>
             <p>
                 {{ student_form.surname.label}}
-                {{ student_form.surname}}
+                {{ student_form.surname|addcss:"form-control"}}
             </p>
             <p>
                 {{ student_form.email.label}}
-                {{ student_form.email}}
+                {{ student_form.email|addcss:"form-control"}}
             </p>
             <p>
                 {{ student_form.birth_date.label}}
-                {{ student_form.birth_date}}
+                {{ student_form.birth_date|addcss:"form-control"}}
             </p>
         </div>
         <input type="submit" id="submit_student_details" class="next btn btn-outline-dark" value="Next"/>
@@ -116,8 +144,8 @@
 <script>
     var current_fs, next_fs, previous_fs;
     var current_step, next_step, previous_step;
-
-    $('.forms').children().find('input').addClass('form-control');
+    var image;
+    //$('.forms').children().find('input').addClass('form-control');
     function titleCase(str) {
         var splitStr = str.toLowerCase().split(' ');
         for (var i = 0; i < splitStr.length; i++) {
@@ -126,6 +154,14 @@
         return splitStr.join(' '); 
     }   
 
+    $("#id_photo").change(function(event) {
+        loadImage(this,event);
+    });
+
+    function loadImage(input,event) {
+        $('#avatar_frame').attr('src', URL.createObjectURL(event.target.files[0]));
+    }
+    
     $('input[type="submit"]').click(function(e){
         var button_id = '#'+e.target.id;
         e.preventDefault();
@@ -158,7 +194,7 @@
                     $(tabButton).html(content.replace(" ✓",""));
                     $(tabButton).removeClass('successful_form');
                     for(var key in response.error){
-                        var field_name = key.replace("_"," ");
+                        var field_name = key.replace(/_/g," ");
                         console.log('[error] for ' + key + ': ' + response.error[key][0]);
                         $("#feedbackmessage").append("<li class='alert alert-danger my-1 py-1'>" +
                             titleCase(field_name) + ': ' + response.error[key][0] +"</li>");
