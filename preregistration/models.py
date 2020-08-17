@@ -5,7 +5,7 @@ from django.utils import timezone
 sexes = [('M','Male'),('K','Female')]
 blood_types = [('0-','0-'),('0+','0+'),('A-','A-'),('A+','A+'),('B-','B-'),('B+','B+'),('AB-','AB-'),('AB+','AB+')]
 registration_types = [('internet','Internet'),('email','Email'),('telephone','Telephone')]
-student_stasuses = [('active','Active'),('passive','Passive')]
+statuses = [('active','Active'),('passive','Passive')]
 educational_stasuses = [('primary','Primary'),('secondary','Secondary'),('university','University'),('none','None')]
 scholarships = [('0','0'),('25','25'),('50','50'),('75','75'),('100','100')]
 marital_statuses = [('together','Together'),('divorced','Divorced')]
@@ -18,7 +18,7 @@ areas = [('gazimağusa','Gazimağusa'),('güzelyurt','Güzelyurt'),('girne','Gir
 class student(models.Model):
     photo = models.ImageField()     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    student_status = models.CharField(max_length=20, choices=student_stasuses)
+    status = models.CharField(max_length=20, choices=statuses)
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=(30))
     email = models.EmailField(max_length = 50)

@@ -11,6 +11,8 @@
 <style>
     fieldset {
         position:relative;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
     .btn-default {
@@ -50,6 +52,33 @@
         padding: 5px;
     }
 
+    .address_area {
+        max-height: 104px;
+    }
+
+    .information_area {
+        max-height: 70px;;
+    }
+
+    fieldset {
+        padding: 10px;
+        border: gainsboro 1px solid;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    fieldset>legend {
+        width:inherit;
+    }
+
+    .form-group {
+        margin-bottom: 4px;
+    }
+
+    .step-fieldsets {
+        border: none;
+    }
+
 </style>
 <div class="container">
         <div class="row">
@@ -62,38 +91,144 @@
         <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
         <button type="button" class="btn btn-default steps" id="l_btn">Transportation Details</button>
     </div>
-    <fieldset class='form-group' id="std_details">
-        <legend>Student Details</legend>
-        <div class='forms'>
-
-            <p>
-                {{ student_form.photo.label}}
-                <div class='avatar'>
-                    <img id='avatar_frame' src="https://i0.wp.com/ahfirstaid.org/wp-content/uploads/2014/07/avatar-placeholder.png?fit=204%2C204">
+    <fieldset class='step-fieldsets' id="std_details">
+        <fieldset> 
+            <legend>Personal Information</legend>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class='form-group'>
+                            <div class='avatar'>
+                                <img id='avatar_frame' src="https://i0.wp.com/ahfirstaid.org/wp-content/uploads/2014/07/avatar-placeholder.png?fit=204%2C204">
+                            </div>
+                            {{ student_form.photo|addcss:"form-control-file"}}
+                        </div>
+                    </div>
+        
+                    <div class="col-sm-3">
+                        <div class='form-group'>
+                            TODO: FIX PHOTO NOT SUBMITTING, USER NOT GETTING SAVD
+                            {{ student_form.status.label}}
+                            {{ student_form.status|addcss:"form-control"}}
+                        </div>
+                        <div class="form-row">
+                            <div class='col form-group'>
+                                {{ student_form.name.label}}
+                                {{ student_form.name|addcss:"form-control"}}
+                            </div>                    
+                            <div class='col form-group'>
+                                {{ student_form.surname.label}}
+                                {{ student_form.surname|addcss:"form-control"}}
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.id_no.label}}
+                            {{ student_form.id_no|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.email.label}}
+                            {{ student_form.email|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>    
+                            {{ student_form.sex.label}}
+                            {{ student_form.sex|addcss:"form-control"}}
+                        </div>
+                    </div>
+    
+                    <div class="col-sm-3">
+                        <div class='form-group'>
+                            {{ student_form.birth_place.label}}
+                            {{ student_form.birth_place|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.birth_date.label}}
+                            {{ student_form.birth_date|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.nationality.label}}
+                            {{ student_form.nationality|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.blood_type.label}}
+                            {{ student_form.blood_type|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.blood_type.label}}
+                            {{ student_form.blood_type|addcss:"form-control"}}
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class='form-group'>
+                            {{ student_form.address.label}}
+                            {{ student_form.address|addcss:"form-control address_area"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.area.label}}
+                            {{ student_form.area|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.phone_number.label}}
+                            {{ student_form.phone_number|addcss:"form-control"}}
+                        </div>
+                        <div class='form-group'>
+                            {{ student_form.home_phone_number.label}}
+                            {{ student_form.home_phone_number|addcss:"form-control"}}
+                        </div>
+                    </div>
                 </div>
-                {{ student_form.photo|addcss:"form-control-file"}}
-            </p>
-
-            <p>
-                {{ student_form.name.label}}
-                {{ student_form.name|addcss:"form-control"}}
-            </p>
-            <p>
-                {{ student_form.surname.label}}
-                {{ student_form.surname|addcss:"form-control"}}
-            </p>
-            <p>
-                {{ student_form.email.label}}
-                {{ student_form.email|addcss:"form-control"}}
-            </p>
-            <p>
-                {{ student_form.birth_date.label}}
-                {{ student_form.birth_date|addcss:"form-control"}}
-            </p>
+                <div class="row">
+                    <div class='col-12 form-group'>
+                        {{ student_form.general_information.label}}
+                        {{ student_form.general_information|addcss:"form-control information_area"}}
+                    </div>
+                    <div class='col-12 form-group'>
+                        {{ student_form.medical_information.label}}
+                        {{ student_form.medical_information|addcss:"form-control information_area"}}
+                    </div>
+                </div>
+        </fieldset>
+        <div class= "row">
+            <div class="col-4"> <!-- Parents Marital Status -->
+                <fieldset>
+                    <legend>Parents Marital Status</legend>
+                        <div class='col-12 form-group'>
+                            {{ student_form.parents_marital_status.label}}
+                            {{ student_form.parents_marital_status|addcss:"form-control information_area"}}
+                            {{ student_form.is_dad_married.label}}
+                            {{ student_form.is_dad_married|addcss:"form-control information_area"}}
+                            {{ student_form.is_mother_married.label}}
+                            {{ student_form.is_mother_married|addcss:"form-control information_area"}}
+                            {{ student_form.mother_state.label}}
+                            {{ student_form.mother_state|addcss:"form-control information_area"}}
+                            {{ student_form.dad_state.label}}
+                            {{ student_form.dad_state|addcss:"form-control information_area"}}
+                        </div>
+                </fieldset>
+            </div>
+            <div class="col-4"> <!-- Registration Details -->
+                <fieldset>
+                    <legend>Registration Details</legend>
+                        <div class='col-12 form-group'>
+                                {{ student_form.foreign_language.label}}
+                                {{ student_form.foreign_language|addcss:"form-control information_area"}}
+                                {{ student_form.registration_type.label}}
+                                {{ student_form.registration_type|addcss:"form-control information_area"}}
+                                {{ student_form.previous_school.label}}
+                                {{ student_form.previous_school|addcss:"form-control information_area"}}
+                                {{ student_form.scholarship.label}}
+                                {{ student_form.scholarship|addcss:"form-control information_area"}}
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-4"> <!-- Password -->
+                        <div class='col-12 form-group'>
+                                {{ student_form.password.label}} = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+                                {{ student_form.password|addcss:"form-control information_area"}}
+                        </div>
+            </div>
         </div>
         <input type="submit" id="submit_student_details" class="next btn btn-outline-dark" value="Next"/>
     </fieldset>
-    <fieldset class='form-group' id="family_details">
+    <fieldset class='step-fieldsets' id="family_details">
         <legend>Family Details</legend>
         <div  class='forms'>
             <div >
@@ -122,7 +257,7 @@
         <input type="submit" id="submit_parent_details" class="previous btn btn-outline-dark" value="Previous"/>
         <input type="submit" id="submit_parent_details" class="next btn btn-outline-dark" value="Next"/>
     </fieldset>
-    <fieldset class='form-group' id="transport_details">
+    <fieldset class='step-fieldsets' id="transport_details">
         <legend>Transportation Details</legend>
             <div class='forms'>
                 <p>
@@ -166,7 +301,7 @@
         var button_id = '#'+e.target.id;
         e.preventDefault();
         $("#feedbackmessage").empty();
-        var formInputs = $(button_id).parent().find('input').serialize();
+        var formInputs = $(button_id).parent().serialize();
         console.log(formInputs);
         $.ajax({    
             type:'POST',
