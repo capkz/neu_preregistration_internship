@@ -13,7 +13,9 @@ def student_information(request):
         buttonName = request.POST['buttonName']
         if buttonName == 'complete_registration':
             if (request.session.pop('1') == True and request.session.pop('2') == True and request.session.pop('3') == True):
-                student = student_form(request.session.pop('student_form')).save()
+                student = student_form(request.session.pop('student_form')).save(commit=False)
+                student.user = request.user
+                student.save()
                 student_id = student.id
                 parent_details = request.session.pop('parent_form')
                 parent_details['related_student']= student_id

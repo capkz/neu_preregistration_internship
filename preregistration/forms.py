@@ -1,10 +1,19 @@
 from django import forms
 from .models import student, parent, sibling, transportation, pickup_backup
+from client_side_image_cropping import ClientsideCroppingWidget
 
 class student_form(forms.ModelForm):
     class Meta:
         model = student
-        fields = '__all__'
+        exclude = ["user","registration_date"]
+        widgets = {
+            'photo': ClientsideCroppingWidget(
+                width=600,
+                height=600,
+                preview_width=0,
+                preview_height=0,     
+            )
+        }
 
 class parent_form(forms.ModelForm):
     class Meta:
