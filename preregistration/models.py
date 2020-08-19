@@ -10,7 +10,7 @@ educational_stasuses = [('primary','Primary'),('secondary','Secondary'),('univer
 scholarships = [('0','0'),('25','25'),('50','50'),('75','75'),('100','100')]
 marital_statuses = [('together','Together'),('divorced','Divorced')]
 states = [('alive','Alive'),('deceased','Deceased')]
-relations = [('mom','Mom'),('dad','Dad'),('sibling','Sibling')]
+relations = [('mom','Mom'),('dad','Dad')]
 schools = [('none','None'),('neu primary','Near East Primary School'),('neu college','Near East College'),('other','Other')]
 ways = [('to school','To School'),('fromschool','From School'),('both ways','Both Ways')]
 areas = [('gazimağusa','Gazimağusa'),('güzelyurt','Güzelyurt'),('girne','Girne'),('lefkoşa','Lefkoşa'),('lefke','Lefke')]
@@ -117,7 +117,4 @@ class disposable_parents(models.Model):
     surname = models.CharField(max_length=30)
     birth_date = models.DateField()
 
-class disposable_transportation(models.Model):
-    related = models.ForeignKey('disposable', on_delete=models.CASCADE, blank=True)
-    name = models.CharField(max_length=30)
-    pickup_date = models.DateField()
+class disposable_transportation(models.Model):format = '%Y-%m-%d'

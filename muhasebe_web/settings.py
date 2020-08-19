@@ -115,7 +115,7 @@ TIME_ZONE = 'Asia/Famagusta'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -130,4 +130,4 @@ LOGIN_REDIRECT_URL = '/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploaded_files')
 MEDIA_URL = '/media/'
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+DATE_INPUT_FORMATS = ['%d-%m-%Y']

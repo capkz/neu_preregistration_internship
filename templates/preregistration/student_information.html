@@ -87,7 +87,8 @@
         <ul class="col-4" id="feedbackmessage"></ul>
     </div>
 </div>
-<form class="student_form" id="student_form" enctype="multipart/form-data" method="POST">{% csrf_token %}
+<form class="student_form" id="student_form" enctype="multipart/form-data" method="POST" autocomplete="off">
+    {% csrf_token %}
     <div class="d-flex justify-content-around border-bottom mb-2" id="step_btns">
         <button type="button" class="btn btn-default steps active_form" id="f_btn">Student Details</button>
         <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
@@ -110,7 +111,7 @@
                         {{ student_form.status|addcss:"form-control"}}
                     </div>
                     <div class="form-row">
-                        <div class='col form-group'>                   
+                        <div class='col form-group'>
                             {{ student_form.name.label}}
                             {{ student_form.name|addcss:"form-control"}}
                         </div>
@@ -150,7 +151,7 @@
                         {{ student_form.blood_type.label}}
                         {{ student_form.blood_type|addcss:"form-control"}}
                     </div>
-                     <div class='form-group'>
+                    <div class='form-group'>
                         {{ student_form.phone_number.label}}
                         {{ student_form.phone_number|addcss:"form-control"}}
                     </div>
@@ -171,7 +172,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class='col-12 forborder-radius: 50%;m-group'>
+                <div class='col-12 form-group'>
                     {{ student_form.general_information.label}}
                     {{ student_form.general_information|addcss:"form-control information_area"}}
                 </div>
@@ -186,12 +187,12 @@
                 <!-- Parents Marital Status -->
                 <fieldset>
                     <legend>Parents Marital Status</legend>
-                    <div class='col-12 form-group'>
+                    <div class='form-group'>
                         <div class="form-group">
                             {{ student_form.parents_marital_status.label}}
                             {{ student_form.parents_marital_status|addcss:"form-control information_area"}}
                         </div>
-                        <div class="form-row">
+                        <div class="form-row parents-status d-none">
                             <div class="form-group col">
                                 {{ student_form.is_dad_married.label}}
                                 {{ student_form.is_dad_married|addcss:"form-control information_area"}}
@@ -212,7 +213,7 @@
                 <!-- Registration Details -->
                 <fieldset>
                     <legend>Registration Details</legend>
-                    <div class='col-12 form-group'>
+                    <div class='form-group'>
                         {{ student_form.foreign_language.label}}
                         {{ student_form.foreign_language|addcss:"form-control information_area"}}
                         {{ student_form.registration_type.label}}
@@ -226,7 +227,7 @@
             </div>
             <div class="col-sm-4">
                 <!-- Password -->
-                <div class='col-12 form-group'>{{ student_form.status.label}}
+                <div class='form-group'>
                     {{ student_form.password.label}}
                     {{ student_form.password|addcss:"form-control information_area"}}
                 </div>
@@ -234,35 +235,161 @@
         </div>
         <input type="submit" id="submit_student_details" class="next btn btn-outline-dark" value="Next" />
     </fieldset>
-    <fieldset class='step-fieldsets' id="family_details">
+    
+<fieldset class='step-fieldsets' id="family_details">
+    <fieldset>
         <legend>Family Details</legend>
-        <div class='forms'>
-            <div>
+        <div class="row">
+            <fieldset>
                 <legend>Mom</legend>
-                <p>
-                    {{ disposable_parents_form.name.label}}
-                    {{ disposable_parents_form.name}}
-                </p>
-                <p>
-                    {{ disposable_parents_form.surname.label}}
-                    {{ disposable_parents_form.surname}}
-                </p>
-                <p>
-                    {{ disposable_parents_form.email.label}}
-                    {{ disposable_parents_form.email}}
-                </p>
-                <p>
-                    {{ disposable_parents_form.birth_date.label}}
-                    {{ disposable_parents_form.birth_date}}
-                </p>
-            </div>
-            <div>
-                <legend>Dad</legend>
-            </div>
+    
+                    <div class="col-sm-4">
+                            <div class="form-group">
+                                {{ mother_form.name.label}}
+                                {{ mother_form.name|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.surname.label}}
+                                {{ mother_form.surname|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.id_no.label}}
+                                {{ mother_form.id_no|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.nationality.label}}
+                                {{ mother_form.nationality|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.is_guardian.label}}
+                                {{ mother_form.is_guardian|addcss:"form-control information_area"}}
+                            </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ mother_form.address.label}}
+                                {{ mother_form.address|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.phone_number.label}}
+                                {{ mother_form.phone_number|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.home_phone_number.label}}
+                                {{ mother_form.home_phone_number|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.work_phone_number.label}}
+                                {{ mother_form.work_phone_number|addcss:"form-control information_area"}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ mother_form.email.label}}
+                                {{ mother_form.email|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.workplace_name.label}}
+                                {{ mother_form.workplace_name|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.job.label}}
+                                {{ mother_form.job|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.education_status.label}}
+                                {{ mother_form.education_status|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.password.label}}
+                                {{ mother_form.password|addcss:"form-control information_area"}}
+                            </div>
+                        </div>
+                    </div>
+            </fieldset>
         </div>
-        <input type="submit" id="submit_parent_details" class="previous btn btn-outline-dark" value="Previous" />
-        <input type="submit" id="submiborder-radius: 50%;t_parent_details" class="next btn btn-outline-dark" value="Next" />
+        <div class="row">
+            <fieldset>
+                <legend>Dad</legend>
+    
+                    <div class="col-sm-4">
+                            <div class="form-group">
+                                {{ mother_form.name.label}}
+                                {{ mother_form.name|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.surname.label}}
+                                {{ mother_form.surname|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.id_no.label}}
+                                {{ mother_form.id_no|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.nationality.label}}
+                                {{ mother_form.nationality|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.is_guardian.label}}
+                                {{ mother_form.is_guardian|addcss:"form-control information_area"}}
+                            </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ mother_form.address.label}}
+                                {{ mother_form.address|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.phone_number.label}}
+                                {{ mother_form.phone_number|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.home_phone_number.label}}
+                                {{ mother_form.home_phone_number|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.work_phone_number.label}}
+                                {{ mother_form.work_phone_number|addcss:"form-control information_area"}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ mother_form.email.label}}
+                                {{ mother_form.email|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.workplace_name.label}}
+                                {{ mother_form.workplace_name|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.job.label}}
+                                {{ mother_form.job|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.education_status.label}}
+                                {{ mother_form.education_status|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.password.label}}
+                                {{ mother_form.password|addcss:"form-control information_area"}}
+                            </div>
+                        </div>
+                    </div>
+    
+            </fieldset>
+        </div>
     </fieldset>
+
+        <input type="submit" id="submit_parent_details" class="previous btn btn-outline-dark" value="Previous" />
+        <input type="submit" id="submit_parent_details" class="next btn btn-outline-dark" value="Next" />
+    </fieldset>
+
     <fieldset class='step-fieldsets' id="transport_details">
         <legend>Transportation Details</legend>
         <div class='forms'>
@@ -279,18 +406,40 @@
             value="Previous" />
         <input type="submit" id="submit_transportation_details" class="next btn btn-outline-dark" value="Submit" />
     </fieldset>
-</form>
-<div class="d-flex border-top mt-2 pt-2 justify-content-center">
-    <input type="submit" id="complete_registration" class="next btn btn-outline-dark submit"
-        value="Complete Registration" />
-</div>
+    </form>
+    <div class="d-flex border-top mt-2 pt-2 justify-content-center">
+        <input type="submit" id="complete_registration" class="next btn btn-outline-dark submit"
+            value="Complete Registration" />
+    </div>
 
 <script>
     var current_fs, next_fs, previous_fs;
     var current_step, next_step, previous_step;
     var image;
+    var isParentsMarriedContainer = $('.parents-status');
+    var parentsMarital = $('#id_parents_marital_status');
 
-    
+
+    parentsMarital.change(function () {
+        var parentsMaritalStatus = $(this).children("option:selected").val();
+        if (parentsMaritalStatus == 'together') {
+            isParentsMarriedContainer.addClass('d-none');
+        } else if (parentsMaritalStatus == 'divorced') {
+            isParentsMarriedContainer.removeClass('d-none');
+        } else {
+            isParentsMarriedContainer.addClass('d-none');
+        }
+    });
+
+    $(function () {
+        $("#id_birth_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1910:today',
+            dateFormat: 'dd-mm-yy'
+        });
+    });
+
     //$('.dcsic_current_img').removeAttr('style');
     function titleCase(str) {
         var splitStr = str.toLowerCase().split(' ');
@@ -338,6 +487,9 @@
                         $("#feedbackmessage").append("<li class='alert alert-danger my-1 py-1'>" +
                             titleCase(field_name) + ': ' + response.error[key][0] + "</li>");
                     }
+                    $("html, body").animate({
+                        scrollTop: $("#feedbackmessage").scrollTop()
+                    }, 200);
                 } else if (response['success']) {
                     console.log('succesfully submitted.');
 
@@ -403,8 +555,5 @@
         previous_fs.show();
         previous_step.addClass('active_form');
     }
-
-
-
 </script>
 {% endblock %}

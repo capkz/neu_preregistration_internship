@@ -1,6 +1,7 @@
 from django import forms
 from .models import student, parent, sibling, transportation, pickup_backup
 from client_side_image_cropping import ClientsideCroppingWidget
+from django.conf import settings
 
 class student_form(forms.ModelForm):
     class Meta:
@@ -14,11 +15,15 @@ class student_form(forms.ModelForm):
                 preview_height=0,     
             )
         }
+        input_formats = {
+            'input_formats': settings.DATE_INPUT_FORMATS
+        }
 
 class parent_form(forms.ModelForm):
     class Meta:
         model = parent
         fields = '__all__'
+        exclude = ["relation","related_student"]
 
 class sibling_form(forms.ModelForm):
     class Meta:

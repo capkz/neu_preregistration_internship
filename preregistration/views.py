@@ -4,15 +4,15 @@ from .forms import student_form, parent_form, sibling_form, transportation_form,
 from .models import student, parent, sibling, transportation, pickup_backup
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
+from django.forms import formset_factory
 
 def student_information(request):
-    disposable_response = 0
-    print("request")
+    #parentsFormset = formset_factory(parent_form,extra=2)
     if request.method == "POST":
         print("request is post")
         buttonName = request.POST['buttonName']
         if buttonName == 'complete_registration':
-            if (request.session.pop('1') == True and request.session.pop('2') == True and request.session.pop('3') == True):
+            if (request.session.pop('1',False) == True and request.session.pop('2',False) == True and request.session.pop('3',False) == True):
                 student = student_form(request.session.pop('student_form')).save(commit=False)
                 student.user = request.user
                 student.save()
@@ -68,12 +68,14 @@ def student_information(request):
     else:
         print("outter else if")
         student_form_request = student_form()
-        parent_form_request = parent_form()
+        mother_form_request = parent_form(prefix="mother")
+        dad_form_request = parent_form(prefix="dad")
         transportation_form_request = transportation_form()
         sibling_form_request = sibling_form()
         pickup_backup_form_request = pickup_backup_form()
-        return render(request, 'preregistration/student_information.html', {'student_form': student_form_request,
-                                                                        'parent_form': parent_form_request,
+    return render(request, 'preregistration/student_information.html', {'student_form': student_form_request,
+                                                                        'mother_form': mother_form_request,
+                                                                        'dad_form': dad_form_request,
                                                                         'transportation_form': transportation_form_request,
                                                                         'sibling_form': sibling_form_request,
                                                                         'pickup_backup_form': pickup_backup_form_request})
