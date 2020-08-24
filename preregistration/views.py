@@ -7,22 +7,34 @@ from django.http import HttpResponse, JsonResponse
 from django.forms import formset_factory
 
 def student_information(request):
-    #parentsFormset = formset_factory(parent_form,extra=2)
+    siblingFormset = formset_factory(sibling_form,extra=1,can_delete=True)
+    pickupBackupFormset = formset_factory(pickup_backup_form,extra=1,can_delete=True)
     if request.method == "POST":
         print("request is post")
         buttonName = request.POST['buttonName']
         if buttonName == 'complete_registration':
-            if (request.session.pop('1',False) == True and request.session.pop('2',False) == True and request.session.pop('3',False) == True):
+            if (request.session.get('1',False) == True and request.session.get('2',False) == True and request.session.get('3',False) == True):
+                del request.session["1"]
+                del request.session["2"]
+                del request.session["3"]
                 student = student_form(request.session.pop('student_form')).save(commit=False)
                 student.user = request.user
                 student.save()
                 student_id = student.id
-                parent_details = request.session.pop('parent_form')
-                parent_details['related_student']= student_id
+                mother_details = request.session.pop('mother_form')
+                mother_uncommitted = mother_form(mother_details).save(commit=False)
+                mother_uncommitted.related_student_id = student_id
+                
+                father_details = request.session.pop('father_form')
+                father_uncommitted = father_form(father_details).save(commit=False)
+                father_uncommitted.related_student_id = student_id
+                
                 transportation_details = request.session.pop('transportation_form')
-                transportation_details['related_student']= student_id
-                parent_form(parent_details).save()
-                transportation_form(transportation_details).save()
+                transportation_uncommitted = transportation_form(transportation_details).save(commit=False)
+                transportation_uncommitted.related_student_id = student_id
+                
+                parent_uncommitted_form().save()
+                transportation_uncommitted().save()
             else:
                 error = {
                     'error': {0 : "Please fill all the forms"}
@@ -42,14 +54,22 @@ def student_information(request):
         
         elif buttonName == 'submit_parent_details':
             print('rn in submit parents')
-            parent_form_request = parent_form(request.POST,request.FILES or None)
-            if parent_form_request.is_valid():
-                request.session['parent_form'] = request.POST.copy()
+            mother_form_request = parent_form(request.POST,request.FILES or None, prefix="mother")
+            dad_form_request = parent_form(request.POST,request.FILES or None, prefix="dad")
+            pickupBackupFormset = pickupBackupFormset(request.POST)
+            if mother_form_request.is_valid() and dad_form_request.is_valid() and pickupBackupFormset.is_valid():
+                request.session['mother_form'] = mother_form_request.cleaned_data()
+                request.session['dad_form'] = dad_form_request.cleaned_data()
                 request.session['2'] = True
                 return JsonResponse({'success':True})
             else:
                 print("ERROR")
-                return JsonResponse({'error':parent_form_request.errors})
+                print(mother_form_request.is_valid())
+                print(dad_form_request.is_valid())
+                print(pickupBackupFormset.is_valid())
+                
+                #TODO seperate errors and return them
+                return JsonResponse({'error':mother_form_request.errors})
         
         elif buttonName == 'submit_transportation_details':
             print('rn in submit transportation')
@@ -71,14 +91,14 @@ def student_information(request):
         mother_form_request = parent_form(prefix="mother")
         dad_form_request = parent_form(prefix="dad")
         transportation_form_request = transportation_form()
-        sibling_form_request = sibling_form()
-        pickup_backup_form_request = pickup_backup_form()
+        siblingFormset = siblingFormset(prefix="sibling")
+        pickupBackupFormset = pickupBackupFormset(prefix="pickup")
     return render(request, 'preregistration/student_information.html', {'student_form': student_form_request,
                                                                         'mother_form': mother_form_request,
                                                                         'dad_form': dad_form_request,
                                                                         'transportation_form': transportation_form_request,
-                                                                        'sibling_form': sibling_form_request,
-                                                                        'pickup_backup_form': pickup_backup_form_request})
+                                                                        'sibling_forms': siblingFormset,
+                                                                        'pickup_backup_forms': pickupBackupFormset})
  
     # print("request")
     # if request.method == "POST":

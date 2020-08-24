@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import student,disposable,disposable_parents,disposable_transportation
+from .models import student,transportation,sibling,parent,pickup_backup
 
 admin.site.register(student)
-admin.site.register(disposable)
-admin.site.register(disposable_parents)
-admin.site.register(disposable_transportation)
+admin.site.register(transportation)
+admin.site.register(sibling)
+admin.site.register(parent)
+admin.site.register(pickup_backup)

@@ -70,7 +70,7 @@ class parent(models.Model):
     password = models.CharField(max_length=20)
 
     def __str__(self):
-        return self.related_student
+        return self.name+" "+self.surname
 
 class sibling(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
@@ -79,21 +79,21 @@ class sibling(models.Model):
     registered_school = models.CharField(max_length=20,choices=schools)
 
     def __str__(self):
-        return self.related_student
+        return self.full_name
 
 class transportation(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
-    is_transportation = models.BooleanField()
+    is_transportation_used = models.BooleanField()
     which_way = models.CharField(max_length=15, choices=ways)
     
-    pick_up_area = models.CharField(max_length=20,choices=areas)
-    pick_up_address = models.TextField()
+    pickup_area = models.CharField(max_length=20,choices=areas)
+    pickup_address = models.TextField()
 
-    drop_off_area = models.CharField(max_length=20,choices=areas)
-    drop_off_address = models.TextField()
+    dropoff_area = models.CharField(max_length=20,choices=areas)
+    dropoff_address = models.TextField()
 
     def __str__(self):
-        return self.related_student
+        return self.id
 
 class pickup_backup(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
@@ -103,7 +103,7 @@ class pickup_backup(models.Model):
     relation = models.CharField(max_length=15)
 
     def __str__(self):
-        return self.related_student
+        return self.name+" "+self.surname
 
 class disposable(models.Model):
     name = models.CharField(max_length=30)

@@ -29,13 +29,16 @@ class sibling_form(forms.ModelForm):
     class Meta:
         model = sibling
         fields = '__all__'
+        exclude = ["related_student"]
         
 class transportation_form(forms.ModelForm):
     class Meta:
         model = transportation
         fields = '__all__'
+        exclude = ["related_student"]
         
 class pickup_backup_form(forms.ModelForm):
     class Meta:
         model = pickup_backup
         fields = '__all__'      
+        exclude = ["related_student"]
