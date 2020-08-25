@@ -74,12 +74,11 @@ class parent(models.Model):
 
 class sibling(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=50)
-    registered_school = models.CharField(max_length=20,choices=schools)
+    fullname = models.CharField(max_length=50)
     registered_school = models.CharField(max_length=20,choices=schools)
 
     def __str__(self):
-        return self.full_name
+        return self.fullname
 
 class transportation(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
@@ -92,8 +91,6 @@ class transportation(models.Model):
     dropoff_area = models.CharField(max_length=20,choices=areas)
     dropoff_address = models.TextField()
 
-    def __str__(self):
-        return self.id
 
 class pickup_backup(models.Model):
     related_student = models.ForeignKey('student', on_delete=models.CASCADE)
