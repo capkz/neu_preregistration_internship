@@ -23,12 +23,17 @@
             <li class="nav-item {% if nbar == 'home' %}active{% endif %}">
               <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
             </li>
+            {% if perms.preregistration.add_student %}
             <li class="nav-item {% if nbar == 'preregistration' %}active{% endif %}">
               <a class="nav-link" href="{% url 'preregistration' %}">Preregistration</a>
             </li>
+            {% endif %}
+
+            {% if perms.preregistration.view_student %}
             <li class="nav-item {% if nbar == 'student_list' %}active{% endif %}">
               <a class="nav-link" href="{% url 'student_list' %}">Students</a>
             </li>
+            {% endif %}
         </ul>
     </div>
     <div class="mx-auto order-0">

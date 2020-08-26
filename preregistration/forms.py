@@ -18,7 +18,12 @@ class student_form(forms.ModelForm):
         input_formats = {
             'input_formats': settings.DATE_INPUT_FORMATS
         }
-
+        
+class student_search(forms.ModelForm):
+    class Meta:
+        model = student
+        fields = ('id',)
+        
 class parent_form(forms.ModelForm):
     class Meta:
         model = parent

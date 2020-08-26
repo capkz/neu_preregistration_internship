@@ -2,11 +2,14 @@ from django.shortcuts import render
 from django.utils import timezone
 from .forms import student_form, parent_form, sibling_form, transportation_form, pickup_backup_form
 from .models import student, parent, sibling, transportation, pickup_backup
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, get_list_or_404
 from django.http import HttpResponse, JsonResponse
 from django.forms import formset_factory
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import permission_required, login_required
 
+@login_required
+@permission_required('preregistration.add_student', raise_exception=True)
 def student_information(request):
     siblingFormset = formset_factory(sibling_form,extra=1,can_delete=True)
     pickupBackupFormset = formset_factory(pickup_backup_form,extra=1,can_delete=True)
@@ -18,10 +21,10 @@ def student_information(request):
                 del request.session["1"]
                 del request.session["2"]
                 del request.session["3"]
-                student = student_form(request.session.pop('student_form')).save(commit=False)
-                student.user = request.user
-                student.save()
-                student_id = student.id
+                student_save = student_form(request.session.pop('student_form')).save(commit=False)
+                student_save.user = request.user
+                student_save.save()
+                student_id = student_save.id
                 
                 mother_details = request.session.pop('mother_form')
                 mother_uncommitted = parent_form(mother_details).save(commit=False)
@@ -53,9 +56,9 @@ def student_information(request):
                 
                 send_mail(
                     'Registration Successful',
-                    'Dear '+student.name+' '+student.surname+',\nYou have successfully registered to NEC \nYour password is '+student.password,
+                    'Dear '+student_save.name+' '+student_save.surname+',\nYou have successfully registered to NEC \nYour password is '+student_save.password,
                     'necstajnoreply@gmail.com',
-                    [student.email],
+                    [student_save.email],
                     fail_silently=False,
                 )
                 
@@ -72,9 +75,6 @@ def student_information(request):
                 request.session['student_form'] = request.POST.copy()
                 request.session['1'] = True
                 return JsonResponse({'success':True})
-            else:
-                print("ERROR")  
-                return JsonResponse({'error':student_form_request.errsibling_formors})
         
         elif buttonName == 'submit_parent_details':
             print('rn in submit parents')
@@ -111,13 +111,39 @@ def student_information(request):
             print("no submit button in POST")
        
     else:
-        print("outter else if")
-        student_form_request = student_form()
-        mother_form_request = parent_form(prefix="mother")
-        dad_form_request = parent_form(prefix="dad")
-        transportation_form_request = transportation_form()
-        siblingFormset = siblingFormset(prefix="sibling")
-        pickupBackupFormset = pickupBackupFormset(prefix="pickup")
+        q = request.GET.get('q',False)
+        if q != False:
+            print("searched")
+            student_query = get_object_or_404(student, pk=q)
+            
+            mother_query= get_object_or_404(parent.objects.filter(relation='mom'), related_student_id=q)
+            father_query= get_object_or_404(parent.objects.filter(relation='dad'), related_student_id=q)
+            
+            transportation_query= get_object_or_404(transportation, related_student_id=q)
+            
+            sibling_query= get_list_or_404(sibling, related_student_id=q)
+            
+            pickup_query= get_object_or_404(pickup_backup, related_student_id=q)
+            student_form_request = student_form(instance= student_query)
+            mother_form_request = parent_form(prefix="mother", instance=mother_query)
+            dad_form_request = parent_form(prefix="dad", instance=father_query)
+            transportation_form_request = transportation_form(instance=transportation_query)
+            siblingFormset = siblingFormset(prefix="sibling")
+            pickupBackupFormset = pickupBackupFormset(prefix="pickup")
+            return render(request, 'preregistration/student_information.html', {'student_form': student_form_request,
+                                                                        'mother_form': mother_form_request,
+                                                                        'dad_form': dad_form_request,
+                                                                        'transportation_form': transportation_form_request,
+                                                                        'sibling_forms': siblingFormset,
+                                                                        'pickup_backup_forms': pickupBackupFormset})
+        else:
+            print("outter else if")
+            student_form_request = student_form()
+            mother_form_request = parent_form(prefix="mother")
+            dad_form_request = parent_form(prefix="dad")
+            transportation_form_request = transportation_form()
+            siblingFormset = siblingFormset(prefix="sibling")
+            pickupBackupFormset = pickupBackupFormset(prefix="pickup")
     return render(request, 'preregistration/student_information.html', {'student_form': student_form_request,
                                                                         'mother_form': mother_form_request,
                                                                         'dad_form': dad_form_request,
@@ -142,8 +168,6 @@ def student_information(request):
     #     print("outter else if")
     #     student_form_request = student_information_form()
     # return render(request, 'preregistration/student_information.html', {'student_form': student_form_request})
-
-
 
 def form_success(request,pk):
     student_details = get_object_or_404(student, pk=pk)

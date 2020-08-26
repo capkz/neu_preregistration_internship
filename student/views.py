@@ -8,7 +8,7 @@ import pdb
 def student_list(request):
     if request.method == 'GET' and 'q' in request.GET:
         q = request.GET.get('q')
-        if q is '':
+        if q == '':
             return redirect('student_list')
         else:
             students = student.objects.filter(id=q)

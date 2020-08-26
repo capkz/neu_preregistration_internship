@@ -98,6 +98,12 @@
         <ul class="col-4" id="feedbackmessage"></ul>
     </div>
 </div>
+     <div class="px-5 py-4 form-row">
+        <form type="get" action="." class="form-inline search-student-form">
+            <input type="number" class="col-8 form-control search-student" name="q"  placeholder="Search by ID" required>
+            <input type="submit" id="search-student" class="col-4 btn btn-outline-dark" value="Search" />
+        </form>
+    </div>
 <form class="student_form" id="student_form" enctype="multipart/form-data" method="POST" autocomplete="off">
     {% csrf_token %}
     <div class="d-flex justify-content-around border-bottom mb-2" id="step_btns">
@@ -105,7 +111,6 @@
         <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
         <button type="button" class="btn btn-default steps" id="l_btn">Transportation Details</button>
     </div>
-
     <fieldset class='step-fieldsets' id="std_details">
         <fieldset>
             <legend>Personal Information</legend>
@@ -399,6 +404,7 @@
         <div>
             <fieldset>
             <legend>Siblings Information</legend>
+            
                 {{ sibling_forms.management_form }}
                 {% for form in sibling_forms.forms %}
                     <div class="row sibling-formset">
@@ -513,7 +519,10 @@
     var isParentsMarriedContainer = $('.parents-status');
     var parentsMarital = $('#id_parents_marital_status');
 
-
+    $('.dcsic_current_img').removeAttr('style');
+    $('.dcsic_current_img').addClass('img-fluid-custom');
+    
+    
     parentsMarital.change(function () {
         var parentsMaritalStatus = $(this).children("option:selected").val();
         var isGuardian = $('.guardian')
@@ -551,9 +560,13 @@
 
     $('input[type="submit"]').click(function (e) {
         var button_id = '#' + e.target.id;
+        $('.add-row').trigger('click'); fffffffffffffffffffffffffffffff
+        if(button_id == "#search-student"){
+            return;
+        }
         e.preventDefault();
         $("#feedbackmessage").empty();
-        var formInputs = $(button_id).parent().serialize();
+        var formInputs = $(button_id).parent().not(".search-student").serialize();
         console.log(formInputs);
         $.ajax({
             type: 'POST',
