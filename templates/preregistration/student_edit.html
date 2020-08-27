@@ -99,7 +99,7 @@
     </div>
 </div>
      <div class="px-5 py-4 form-row">
-        <form type="get" action="." class="form-inline search-student-form">
+        <form type="get" action="{% url 'student_edit' %}" class="form-inline search-student-form">
             <input type="number" class="col-8 form-control search-student" name="q"  placeholder="Search by ID" required>
             <input type="submit" id="search-student" class="col-4 btn btn-outline-dark" value="Search" />
         </form>
@@ -408,6 +408,7 @@
                 {{ sibling_forms.management_form }}
                 {% for form in sibling_forms.forms %}
                     <div class="row sibling-formset">
+                    {{ form.id }}
                         <div class="col-sm-8">
                             <div class="form-group">
                                 {{ form.fullname.label}}
@@ -560,7 +561,6 @@
 
     $('input[type="submit"]').click(function (e) {
         var button_id = '#' + e.target.id;
-        $('.add-row').trigger('click'); fffffffffffffffffffffffffffffff
         if(button_id == "#search-student"){
             return;
         }

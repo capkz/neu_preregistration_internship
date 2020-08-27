@@ -34,7 +34,7 @@ class sibling_form(forms.ModelForm):
     class Meta:
         model = sibling
         fields = '__all__'
-        exclude = ["related_student"]
+        exclude = ["related_student","id"]
         
 class transportation_form(forms.ModelForm):
     class Meta:

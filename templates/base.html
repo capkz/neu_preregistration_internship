@@ -24,8 +24,8 @@
               <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
             </li>
             {% if perms.preregistration.add_student %}
-            <li class="nav-item {% if nbar == 'preregistration' %}active{% endif %}">
-              <a class="nav-link" href="{% url 'preregistration' %}">Preregistration</a>
+            <li class="nav-item {% if nbar == 'student_add' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'student_add' %}">Preregistration</a>
             </li>
             {% endif %}
 

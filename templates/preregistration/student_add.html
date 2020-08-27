@@ -1,0 +1,673 @@
+{% extends 'base.html' %}
+{% load myfilters %}
+{% load static %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"
+    integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig=="
+    crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css"
+    integrity="sha512-zxBiDORGDEAYDdKLuYU9X/JaJo/DPzE42UubfBw9yg8Qvb2YRRIQ8v4KsGHOx2H1/+sdSXyXxLXv5r7tHc9ygg=="
+    crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+<script src="https://kit.fontawesome.com/1283fe0f05.js" crossorigin="anonymous"></script>
+<script src="https://raw.githack.com/elo80ka/django-dynamic-formset/master/src/jquery.formset.js"></script>
+<link rel="stylesheet" href="{% static "client_side_image_cropping/cropping_widget.css" %}" />
+<script src="{% static "client_side_image_cropping/cropping_widget.js" %}"></script>
+<script type="text/javascript">
+    $(function() {
+        $('.sibling-formset').formset({
+            prefix: '{{ sibling_forms.prefix }}'
+        });
+        $('.pickup-formset').formset({
+            prefix: '{{ pickup_backup_forms.prefix }}'
+        });
+    })
+</script>
+{% endblock scripts %}
+{% block content %}
+
+<style>
+    fieldset {
+        position: relative;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .btn-default {
+        border
+    }
+
+    fieldset:not(:first-of-type) {
+        display: none;
+    }
+
+    .successful_form {
+        background: #C8F5C0;
+    }
+
+    .error_form {
+        background: #F5C6CB;
+    }
+
+    .active_form {
+        background: #dbdbdb;
+    }
+
+    .submit {
+        font-weight: bold;
+    }
+
+    .address_area {
+        max-height: 194px;
+    }
+
+    .information_area {
+        max-height: 70px;
+    }
+
+    fieldset {
+        padding: 10px;
+        border: gainsboro 1px solid;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    fieldset>legend {
+        width: inherit;
+    }
+
+    fieldset>.form-group {
+        margin-bottom: 4px;
+    }
+
+    .step-fieldsets {
+        border: none;
+    }
+
+    .img-fluid-custom {
+        max-width: 80%;
+        height: auto;
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <ul class="col-4" id="feedbackmessage"></ul>
+    </div>
+</div>
+     <div class="px-5 py-4 form-row">
+        <form type="get" action="{% url 'student_edit' %}" class="form-inline search-student-form">
+            <input type="number" class="col-8 form-control search-student" name="q"  placeholder="Search by ID" required>
+            <input type="submit" id="search-student" class="col-4 btn btn-outline-dark" value="Search" />
+        </form>
+    </div>
+<form class="student_form" id="student_form" enctype="multipart/form-data" method="POST" autocomplete="off">
+    {% csrf_token %}
+    <div class="d-flex justify-content-around border-bottom mb-2" id="step_btns">
+        <button type="button" class="btn btn-default steps active_form" id="f_btn">Student Details</button>
+        <button type="button" class="btn btn-default steps" id="s_btn">Family Details</button>
+        <button type="button" class="btn btn-default steps" id="l_btn">Transportation Details</button>
+    </div>
+    <fieldset class='step-fieldsets' id="std_details">
+        <fieldset>
+            <legend>Personal Information</legend>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        {{ student_form.photo.label}}
+                        {{ student_form.photo|addcss:"form-control"}}
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class='form-group'>
+                        {{ student_form.status.label}}
+                        {{ student_form.status|addcss:"form-control"}}
+                    </div>
+                    <div class="form-row">
+                        <div class='col form-group'>
+                            {{ student_form.name.label}}
+                            {{ student_form.name|addcss:"form-control"}}
+                        </div>
+                        <div class='col form-group'>
+                            {{ student_form.surname.label}}
+                            {{ student_form.surname|addcss:"form-control"}}
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.id_no.label}}
+                        {{ student_form.id_no|addcss:"form-control"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.email.label}}
+                        {{ student_form.email|addcss:"form-control"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.sex.label}}
+                        {{ student_form.sex|addcss:"form-control"}}
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class='form-group'>
+                        {{ student_form.birth_place.label}}
+                        {{ student_form.birth_place|addcss:"form-control"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.birth_date.label}}
+                        {{ student_form.birth_date|addcss:"form-control"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.nationality.label}}
+                        {{ student_form.nationality|addcss:"form-control"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.blood_type.label}}
+                        {{ student_form.blood_type|addcss:"form-control"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.phone_number.label}}
+                        {{ student_form.phone_number|addcss:"form-control"}}
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class='form-group'>
+                        {{ student_form.address.label}}
+                        {{ student_form.address|addcss:"form-control address_area"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.area.label}}
+                        {{ student_form.area|addcss:"form-control"}}
+                    </div>
+                    <div class='form-group'>
+                        {{ student_form.home_phone_number.label}}
+                        {{ student_form.home_phone_number|addcss:"form-control"}}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class='col-12 form-group'>
+                    {{ student_form.general_information.label}}
+                    {{ student_form.general_information|addcss:"form-control information_area"}}
+                </div>
+                <div class='col-12 form-group'>
+                    {{ student_form.medical_information.label}}
+                    {{ student_form.medical_information|addcss:"form-control information_area"}}
+                </div>
+            </div>
+        </fieldset>
+        <div class="row">
+            <div class="col-sm-4">
+                <!-- Parents Marital Status -->
+                <fieldset>
+                    <legend>Parents Marital Status</legend>
+                    <div class='form-group'>
+                        <div class="form-group">
+                            {{ student_form.parents_marital_status.label}}
+                            {{ student_form.parents_marital_status|addcss:"form-control information_area"}}
+                        </div>
+                        <div class="form-row parents-status d-none">
+                            <div class="form-group col">
+                                {{ student_form.is_dad_married.label}}
+                                {{ student_form.is_dad_married|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group col">
+                                {{ student_form.is_mother_married.label}}
+                                {{ student_form.is_mother_married|addcss:"form-control information_area"}}
+                            </div>
+                        </div>
+                        {{ student_form.mother_state.label}}
+                        {{ student_form.mother_state|addcss:"form-control information_area"}}
+                        {{ student_form.dad_state.label}}
+                        {{ student_form.dad_state|addcss:"form-control information_area"}}
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-sm-4">
+                <!-- Registration Details -->
+                <fieldset>
+                    <legend>Registration Details</legend>
+                    <div class='form-group'>
+                        {{ student_form.foreign_language.label}}
+                        {{ student_form.foreign_language|addcss:"form-control information_area"}}
+                        {{ student_form.registration_type.label}}
+                        {{ student_form.registration_type|addcss:"form-control information_area"}}
+                        {{ student_form.previous_school.label}}
+                        {{ student_form.previous_school|addcss:"form-control information_area"}}
+                        {{ student_form.scholarship.label}}
+                        {{ student_form.scholarship|addcss:"form-control information_area"}}
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-sm-4">
+                <!-- Password -->
+                <div class='form-group'>
+                    {{ student_form.password.label}}
+                    {{ student_form.password|addcss:"form-control information_area"}}
+                </div>
+            </div>
+        </div>
+        <input type="submit" id="submit_student_details" class="next btn btn-outline-dark" value="Next" />
+    </fieldset>
+    
+<fieldset class='step-fieldsets' id="family_details">
+    <fieldset>
+        <legend>Family Details</legend>
+        
+        <fieldset>
+            <legend>Mom</legend>
+                <div class="row">
+                    <div class="col-sm-4">
+                            <div class="form-group">
+                                {{ mother_form.name.label}}
+                                {{ mother_form.name|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.surname.label}}
+                                {{ mother_form.surname|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.id_no.label}}
+                                {{ mother_form.id_no|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.nationality.label}}
+                                {{ mother_form.nationality|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group guardian">
+                                {{ mother_form.is_guardian.label}}
+                                {{ mother_form.is_guardian|addcss:"form-control information_area"}}
+                            </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ mother_form.address.label}}
+                                {{ mother_form.address|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.phone_number.label}}
+                                {{ mother_form.phone_number|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.home_phone_number.label}}
+                                {{ mother_form.home_phone_number|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.work_phone_number.label}}
+                                {{ mother_form.work_phone_number|addcss:"form-control information_area"}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ mother_form.email.label}}
+                                {{ mother_form.email|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.workplace_name.label}}
+                                {{ mother_form.workplace_name|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.job.label}}
+                                {{ mother_form.job|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.education_status.label}}
+                                {{ mother_form.education_status|addcss:"form-control information_area"}}
+                            </div>
+                            <div class="form-group">
+                                {{ mother_form.password.label}}
+                                {{ mother_form.password|addcss:"form-control information_area"}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </fieldset>
+    
+        <div>
+            <fieldset>
+                <legend>Dad</legend>
+                    <div class="row">
+                        <div class="col-sm-4">
+                                <div class="form-group">
+                                    {{ dad_form.name.label}}
+                                    {{ dad_form.name|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.surname.label}}
+                                    {{ dad_form.surname|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.id_no.label}}
+                                    {{ dad_form.id_no|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.nationality.label}}
+                                    {{ dad_form.nationality|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group guardian">
+                                    {{ dad_form.is_guardian.label}}
+                                    {{ dad_form.is_guardian|addcss:"form-control information_area"}}
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    {{ dad_form.address.label}}
+                                    {{ dad_form.address|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.phone_number.label}}
+                                    {{ dad_form.phone_number|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.home_phone_number.label}}
+                                    {{ dad_form.home_phone_number|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.work_phone_number.label}}
+                                    {{ dad_form.work_phone_number|addcss:"form-control information_area"}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    {{ dad_form.email.label}}
+                                    {{ dad_form.email|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.workplace_name.label}}
+                                    {{ dad_form.workplace_name|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.job.label}}
+                                    {{ dad_form.job|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.education_status.label}}
+                                    {{ dad_form.education_status|addcss:"form-control information_area"}}
+                                </div>
+                                <div class="form-group">
+                                    {{ dad_form.password.label}}
+                                    {{ dad_form.password|addcss:"form-control information_area"}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </fieldset>
+        </div>
+        <div>
+            <fieldset>
+            <legend>Siblings Information</legend>
+            
+                {{ sibling_forms.management_form }}
+                {% for form in sibling_forms.forms %}
+                    <div class="row sibling-formset">
+                    {{ form.id }}
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                {{ form.fullname.label}}
+                                {{ form.fullname|addcss:"form-control information_area"}}
+                            </div>  
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                {{ form.registered_school.label}}
+                                {{ form.registered_school|addcss:"form-control information_area"}}
+                            </div>  
+                        </div>
+                    </div>
+                {% endfor %}
+            </fieldset>
+        </div>
+    </fieldset>
+    
+        <input type="submit" id="submit_parent_details" class="previous btn btn-outline-dark" value="Previous" />
+        <input type="submit" id="submit_parent_details" class="next btn btn-outline-dark" value="Next" />
+    </fieldset>
+
+    <fieldset class='step-fieldsets' id="transport_details">
+        <fieldset>
+        <legend>Transportation Details</legend>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    {{ transportation_form.is_transportation_used.label}}
+                    {{ transportation_form.is_transportation_used|addcss:"form-control information_area"}}
+                </div>
+            </div>  
+            <div class="col-sm-6">
+                <div class="form-group">
+                    {{ transportation_form.which_way.label}}
+                    {{ transportation_form.which_way|addcss:"form-control information_area"}}
+                </div>
+            </div>
+        </div>
+        <hr class="my-3">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    {{ transportation_form.pickup_area.label}}
+                    {{ transportation_form.pickup_area|addcss:"form-control information_area"}}
+                </div>  
+                <div class="form-group">
+                    {{ transportation_form.pickup_address.label}}
+                    {{ transportation_form.pickup_address|addcss:"form-control information_area"}}
+                </div>  
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    {{ transportation_form.dropoff_area.label}}
+                    {{ transportation_form.dropoff_area|addcss:"form-control information_area"}}
+                </div>  
+                <div class="form-group">
+                    {{ transportation_form.dropoff_address.label}}
+                    {{ transportation_form.dropoff_address|addcss:"form-control information_area"}}
+                </div>  
+            </div>
+        </div>
+        <hr class="my-3">
+        <p>Add adults that can pick up the student.</p>
+            {{ pickup_backup_forms.management_form }}
+            {% for form in pickup_backup_forms.forms %}
+                <div class="row pickup-formset">
+                    {{ form.id }}
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            {{ form.name.label}}
+                            {{ form.name|addcss:"form-control information_area"}}
+                        </div>  
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            {{ form.surname.label}}
+                            {{ form.surname|addcss:"form-control information_area"}}
+                        </div>  
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            {{ form.phone_number.label}}
+                            {{ form.phone_number|addcss:"form-control information_area"}}
+                        </div>  
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            {{ form.relation.label}}
+                            {{ form.relation|addcss:"form-control information_area"}}
+                        </div>  
+                    </div>
+                </div>
+            {% endfor %}
+        </fieldset>
+        <input type="submit" id="submit_transportation_details" class="previous btn btn-outline-dark"
+            value="Previous" />
+        <input type="submit" id="submit_transportation_details" class="next btn btn-outline-dark" value="Submit" />
+    </fieldset>
+    </form>
+    <div class="d-flex border-top mt-2 pt-2 justify-content-center">
+        <input type="submit" id="complete_registration" class="next btn btn-outline-dark submit"
+            value="Complete Registration" />
+    </div>
+
+<script>
+    var current_fs, next_fs, previous_fs;
+    var current_step, next_step, previous_step;
+    var image;
+    var isParentsMarriedContainer = $('.parents-status');
+    var parentsMarital = $('#id_parents_marital_status');
+
+    $('.dcsic_current_img').removeAttr('style');
+    $('.dcsic_current_img').addClass('img-fluid-custom');
+    
+    
+    parentsMarital.change(function () {
+        var parentsMaritalStatus = $(this).children("option:selected").val();
+        var isGuardian = $('.guardian')
+        var guardianCheck = isGuardian.siblings("checkbox")
+        if (parentsMaritalStatus == 'together') {
+            isParentsMarriedContainer.addClass('d-none');
+            isGuardian.addClass('d-none');
+            guardianCheck.prop("checked",true);
+        } else if (parentsMaritalStatus == 'divorced') {
+            isParentsMarriedContainer.removeClass('d-none');
+            isGuardian.removeClass('d-none');
+            guardianCheck.prop("checked",false);
+        } else {
+            isParentsMarriedContainer.addClass('d-none');
+        }
+    });
+
+    $(function () {
+        $("#id_birth_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1910:today',
+            dateFormat: 'dd-mm-yy'
+        });
+    });
+
+    //$('.dcsic_current_img').removeAttr('style');
+    function titleCase(str) {
+        var splitStr = str.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+        }
+        return splitStr.join(' ');
+    }
+
+    $('input[type="submit"]').click(function (e) {
+        var button_id = '#' + e.target.id;
+        if(button_id == "#search-student"){
+            return;
+        }
+        e.preventDefault();
+        $("#feedbackmessage").empty();
+        var formInputs = $(button_id).parent().not(".search-student").serialize();
+        console.log(formInputs);
+        $.ajax({
+            type: 'POST',
+            data: formInputs + '&csrfmiddlewaretoken=' + $('input[name=csrfmiddlewaretoken]').val() +
+                '&buttonName=' + e.target.id,
+            success: function (response) {
+                console.log(response);
+                switch (button_id) {
+                    case "#submit_student_details":
+                        var tabButton = "#f_btn";
+                        break;
+                    case "#submit_parent_details":
+                        var tabButton = "#s_btn";
+                        break;
+                    case "#submit_transportation_details":
+                        var tabButton = "#l_btn";
+                        break;
+                    case "#complete_registration":
+                        var tabButton = "#l_btn";
+                        break;
+                    default:
+                        alert("Case didnt work");
+                }
+                if (response['error']) {
+                    var content = $(tabButton).html();
+                    $(tabButton).html(content.replace(" ✓", ""));
+                    $(tabButton).removeClass('successful_form');
+                    for (var key in response.error) {
+                        var field_name = key.replace(/_/g, " ");
+                        console.log('[error] for ' + key + ': ' + response.error[key][0]);
+                        $("#feedbackmessage").append("<li class='alert alert-danger my-1 py-1'>" +
+                            titleCase(field_name) + ': ' + response.error[key][0] + "</li>");
+                    }
+                    $("html, body").animate({
+                        scrollTop: $("#feedbackmessage").scrollTop()
+                    }, 200);
+                } else if (response['success']) {
+                    console.log('succesfully submitted.');
+
+                    if ($(tabButton).html().indexOf('✓') == -1) {
+                        $(tabButton).append(' ✓');
+                        $(tabButton).addClass('successful_form');
+                    }
+                    if (e.target.value == 'Next') {
+                        next_form(button_id);
+                    } else if (e.target.value == 'Previous')
+                        previous_form(button_id);
+                }
+            },
+            error: function (request, status, error) {
+                console.log(request.responseText);
+            }
+        });
+    });
+
+
+    $(".steps").click(function (e) {
+        var show_fs;
+        clicked_btn = "#" + e.target.id;
+        $(".student_form").children().hide();
+        switch (clicked_btn) {
+            case "#f_btn":
+                show_fs = "#std_details";
+                break;
+            case "#s_btn":
+                show_fs = "#family_details";
+                break;
+            case "#l_btn":
+                show_fs = "#transport_details";
+                break;
+            default:
+                alert("Case didnt work");
+        }
+        $(show_fs).show();
+        $("#step_btns").children().removeClass("active_form");
+        $(clicked_btn).addClass("active_form");
+    })
+
+    function next_form(buttonID) {
+        current_fs = $(buttonID).parent();
+        next_fs = $(buttonID).parent().next();
+        current_step = $('.active_form');
+        next_step = current_step.next();
+
+        current_fs.hide();
+        current_step.removeClass('active_form');
+        next_fs.show();
+        next_step.addClass('active_form');
+
+    }
+
+    function previous_form(buttonID) {
+        current_fs = $(buttonID).parent();
+        previous_fs = $(buttonID).parent().prev();
+        current_step = $('.active_form');
+        previous_step = current_step.prev();
+        current_fs.hide();
+        current_step.removeClass('active_form');
+        previous_fs.show();
+        previous_step.addClass('active_form');
+    }
+</script>
+{% endblock %}
