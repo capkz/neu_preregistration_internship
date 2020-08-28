@@ -9,6 +9,7 @@ django-formtools = "*"
 pillow = "*"
 django-crispy-forms = "*"
 django-client-side-image-cropping = "*"
+django-cleanup = "*"
 
 [dev-packages]
 

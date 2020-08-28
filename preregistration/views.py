@@ -8,11 +8,22 @@ from django.forms import formset_factory, modelformset_factory
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import permission_required, login_required
 
+def querydict_to_dict(query_dict):
+    data = {}
+    for key in query_dict.keys():
+        v = query_dict.getlist(key)
+        if len(v) == 1:
+            v = v[0]
+        data[key] = v
+    return data
+
 @login_required
 @permission_required('preregistration.add_student', raise_exception=True)
 def student_add(request):
     siblingFormset = formset_factory(sibling_form,extra=1,can_delete=True)
     pickupBackupFormset = formset_factory(pickup_backup_form,extra=1,can_delete=True)
+    
+    pickupBackupFormset()
     if request.method == "POST":
         print("request is post")
         buttonName = request.POST['buttonName']
@@ -80,7 +91,7 @@ def student_add(request):
             print('rn in submit parents')
             mother_form_request = parent_form(request.POST,request.FILES or None, prefix="mother")
             dad_form_request = parent_form(request.POST,request.FILES or None, prefix="dad")
-            siblingFormsetRequest = siblingFormset(request.POST, prefix="sibling")
+            siblingFormsetRequest = siblingFormset(request.POST, prefix="sibling", )
             if mother_form_request.is_valid() and dad_form_request.is_valid() and siblingFormsetRequest.is_valid():
                 request.session['mother_form'] = mother_form_request.cleaned_data
                 request.session['father_form'] = dad_form_request.cleaned_data
@@ -177,12 +188,69 @@ def student_add(request):
 def student_edit(request):
     siblingFormset = modelformset_factory(sibling, form=sibling_form ,extra=0)
     pickupBackupFormset = modelformset_factory(pickup_backup, form=pickup_backup_form ,extra=0)
+    
+    q = request.GET.get('q')
+    student_query = get_object_or_404(student, pk=q)
+    mother_query= get_object_or_404(parent.objects.filter(relation='mom'), related_student_id=q)
+    father_query= get_object_or_404(parent.objects.filter(relation='dad'), related_student_id=q)
+    transportation_query= get_object_or_404(transportation, related_student_id=q)
+    sibling_query =sibling.objects.filter(related_student=q)
+    pickup_backup_query =pickup_backup.objects.filter(related_student=q)
+        
     if request.method == 'POST':
         buttonName = request.POST['buttonName']
-            
-        if buttonName == 'submit_student_details': #If student_details button is pressed
+        
+        if buttonName == 'complete_registration':
+            if (request.session.get('1',False) == True or request.session.get('2',False) == True or request.session.get('3',False) == True):
+                if request.session.pop('1',False) == True:
+                    student_save = student_form(request.session.pop('student_form'),instance=student_query).save(commit=False)
+                    if request.session.get('student_form','') is not '':
+                        print('theres is a new photo')
+                        student_save.delete()
+                        student_save.photo = request.session.get('student_form')['photo']
+                    
+                    student_save.user = request.user
+                    student_save.save()
+                
+                if request.session.pop('2',False) == True:
+                    mother_details = request.session.pop('mother_form')
+                    mother_uncommitted = parent_form(mother_details, instance=mother_query).save()
+                    
+                    father_details = request.session.pop('father_form')
+                    father_uncommitted = parent_form(father_details, instance=father_query).save()
+                    
+                    siblings_details = request.session.pop('siblings_form')
+                    siblingFormset(siblings_details, queryset=sibling_query, prefix="sibling").save()
+                
+                if request.session.pop('3',False) == True:
+                    transportation_details = request.session.pop('transportation_form')
+                    transportation_uncommitted = transportation_form(transportation_details,instance=transportation_query).save()
+                    
+                    pickup_details = request.session.pop('pickup_backups')
+                    pickupBackupFormset(pickup_details,queryset=pickup_backup_query, prefix="pickup").save()
+
+                
+                # send_mail(
+                #     'Registration Successful',
+                #     'Dear '+student_save.name+' '+student_save.surname+',\nYour student details have been successfully changed!',
+                #     'necstajnoreply@gmail.com',
+                #     [student_save.email],
+                #     fail_silently=False,
+                # )
+                
+                student_query = student.objects.filter(id=q)
+                return render(request, 'preregistration/student_success.html', {'student': student_query,
+                                                                                'action': 'edit' })
+                
+            else:
+                error = {
+                    'error': {0 : "Please fill all the forms"}
+                }
+                return JsonResponse({'error':error})
+        
+        elif buttonName == 'submit_student_details': #If student_details button is pressed
             print('rn in submit_student_details')
-            student_form_request = student_form(request.POST,request.FILES or None)
+            student_form_request = student_form(request.POST,request.FILES, instance=student_query)
             if student_form_request.is_valid():
                 request.session['student_form'] = request.POST.copy()
                 request.session['1'] = True
@@ -193,11 +261,13 @@ def student_edit(request):
             
         elif buttonName == 'submit_parent_details':
             print('rn in submit parents')
-            mother_form_request = parent_form(request.POST,request.FILES or None, prefix="mother")
-            dad_form_request = parent_form(request.POST,request.FILES or None, prefix="dad")
-            siblingFormsetRequest = siblingFormset(request.POST, prefix='sibling')
+            mother_form_request = parent_form(request.POST,request.FILES, instance=mother_query, prefix="mother")
+            dad_form_request = parent_form(request.POST,request.FILES, instance=father_query , prefix="dad")
+            siblingFormsetRequest = siblingFormset(request.POST, queryset=sibling_query ,prefix='sibling')
             if mother_form_request.is_valid() and dad_form_request.is_valid() and siblingFormsetRequest.is_valid():
-                request.session['siblings_form'] = request.POST
+                request.session['siblings_form'] = querydict_to_dict(siblingFormsetRequest.data)
+                request.session['mother_form'] = mother_form_request.cleaned_data
+                request.session['father_form'] = dad_form_request.cleaned_data
                 request.session['2'] = True
                 return JsonResponse({'success':True})
             else:
@@ -207,12 +277,12 @@ def student_edit(request):
             
         elif buttonName == 'submit_transportation_details':
             print('rn in submit transportation')
-            transportation_form_request = transportation_form(request.POST,request.FILES or None)
-            pickupBackupFormsetRequest = pickupBackupFormset(request.POST, prefix='pickup')
+            transportation_form_request = transportation_form(request.POST,request.FILES, instance=transportation_query)
+            pickupBackupFormsetRequest = pickupBackupFormset(request.POST, queryset=pickup_backup_query, prefix='pickup')
             if transportation_form_request.is_valid() and pickupBackupFormsetRequest.is_valid():
                 request.session['transportation_form'] = transportation_form_request.cleaned_data
-                request.session['pickup_backups'] = request.POST.copy()
-                
+                request.session['pickup_backups'] = querydict_to_dict(pickupBackupFormsetRequest.data)
+    
                 request.session['3'] = True
                 return JsonResponse({'success':True})
             else:
@@ -220,10 +290,7 @@ def student_edit(request):
                 return JsonResponse({'error':transportation_form_request.errors})
             
     elif request.method == 'GET':
-            
-        q = request.GET.get('q')
-        student_query = get_object_or_404(student, pk=q)
-                
+        
         mother_query= get_object_or_404(parent.objects.filter(relation='mom'), related_student_id=q)
         father_query= get_object_or_404(parent.objects.filter(relation='dad'), related_student_id=q)
         
@@ -234,9 +301,8 @@ def student_edit(request):
         dad_form_request = parent_form(prefix="dad", instance=father_query)
         transportation_form_request = transportation_form(instance=transportation_query)
         
-        
-        siblingEditFormset = siblingFormset(queryset=sibling.objects.filter(related_student=q), prefix="sibling")
-        pickupBackupEditFormset = pickupBackupFormset(queryset=pickup_backup.objects.filter(related_student=q), prefix="pickup")
+        siblingEditFormset = siblingFormset(queryset= sibling_query, prefix="sibling")
+        pickupBackupEditFormset = pickupBackupFormset(queryset= pickup_backup_query, prefix="pickup")
         
         #siblingFormset = siblingFormset(prefix="sibling")
         

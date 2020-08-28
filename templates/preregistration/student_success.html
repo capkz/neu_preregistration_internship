@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {{ student.photo }}
+    {{ student.name }}
+    {{ student.surname }}
+    {% if action == 'edit' %}
+        <p>Student successfully edited!</p>
+    {% endif %}
+    {% if action  == 'add' %}
+        <p>Student successfully added!</p>
+    {% endif %}
+{% endblock %}
