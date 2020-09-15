@@ -151,7 +151,8 @@ def student_add(request):
                                                                         'dad_form': dad_form_request,
                                                                         'transportation_form': transportation_form_request,
                                                                         'sibling_forms': siblingEditFormset,
-                                                                        'pickup_backup_forms': pickupBackupFormset})
+                                                                        'pickup_backup_forms': pickupBackupFormset,
+                                                                        'nbar': 'student'})
         else:
             print("outter else if")
             student_form_request = student_form()
@@ -165,7 +166,8 @@ def student_add(request):
                                                                         'dad_form': dad_form_request,
                                                                         'transportation_form': transportation_form_request,
                                                                         'sibling_forms': siblingFormset,
-                                                                        'pickup_backup_forms': pickupBackupFormset})
+                                                                        'pickup_backup_forms': pickupBackupFormset,
+                                                                        'nbar': 'student'})
  
     # print("request")
     # if request.method == "POST":
@@ -240,7 +242,8 @@ def student_edit(request):
                 
                 student_query = student.objects.filter(id=q)
                 return render(request, 'preregistration/student_success.html', {'student': student_query,
-                                                                                'action': 'edit' })
+                                                                                'action': 'edit',
+                                                                                'nbar': 'student' })
                 
             else:
                 error = {
@@ -266,6 +269,7 @@ def student_edit(request):
             siblingFormsetRequest = siblingFormset(request.POST, queryset=sibling_query ,prefix='sibling')
             if mother_form_request.is_valid() and dad_form_request.is_valid() and siblingFormsetRequest.is_valid():
                 request.session['siblings_form'] = querydict_to_dict(siblingFormsetRequest.data)
+                print (querydict_to_dict(siblingFormsetRequest.data))
                 request.session['mother_form'] = mother_form_request.cleaned_data
                 request.session['father_form'] = dad_form_request.cleaned_data
                 request.session['2'] = True
@@ -312,9 +316,10 @@ def student_edit(request):
                                                                     'dad_form': dad_form_request,
                                                                     'transportation_form': transportation_form_request,
                                                                     'sibling_forms': siblingEditFormset,
-                                                                    'pickup_backup_forms': pickupBackupEditFormset})
+                                                                    'pickup_backup_forms': pickupBackupEditFormset,
+                                                                    'nbar': 'student'})
 
-def form_success(request,pk):
+def form_success(request,pk,code):
     student_details = get_object_or_404(student, pk=pk)
     return render(request, 'preregistration/form_success.html', {'student':student_details})
 

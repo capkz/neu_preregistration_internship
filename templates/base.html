@@ -24,7 +24,7 @@
               <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
             </li>
             {% if perms.preregistration.add_student %}
-            <li class="nav-item {% if nbar == 'student_add' %}active{% endif %}">
+            <li class="nav-item {% if nbar == 'student' %}active{% endif %}">
               <a class="nav-link" href="{% url 'student_add' %}">Preregistration</a>
             </li>
             {% endif %}
@@ -52,14 +52,14 @@
                 <a class="nav-link nav-details" style="color:white;" href="#">Hello {{ user.username }},</a>
             </li>
             <li class="nav-item">
+              {% if perms.preregistration.add_user %} <a class="nav-link" href="#">Register User</a> {% endif %}
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="{% url 'logout' %}">Logout</a>
             </li>
           {% else %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'login' %}">Log in<span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Register</a>
             </li>
           {% endif %}
         </ul>

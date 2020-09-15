@@ -12,10 +12,12 @@ def student_list(request):
             return redirect('student_list')
         else:
             students = student.objects.filter(id=q)
-            return render(request, 'student/student_list.html', {'students': students})
+            return render(request, 'student/student_list.html', {'students': students,
+                                                                 'nbar': 'student_list'})
     else:
         students = student.objects.all()
-        return render(request, 'student/student_list.html', {'students': students})
+        return render(request, 'student/student_list.html', {'students': students,
+                                                             'nbar': 'student_list'})
 
 
 
