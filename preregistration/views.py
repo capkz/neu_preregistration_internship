@@ -7,6 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.forms import formset_factory, modelformset_factory
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.models import User, Group
 
 def querydict_to_dict(query_dict):
     data = {}
@@ -16,6 +17,17 @@ def querydict_to_dict(query_dict):
             v = v[0]
         data[key] = v
     return data
+
+
+def _sendMail(subject,message,toEmail):
+    send_mail(
+    subject,
+    message,
+    'necstajnoreply@gmail.com',
+    [toEmail],
+    fail_silently=False,
+    )
+
 
 @login_required
 @permission_required('preregistration.add_student', raise_exception=True)
@@ -36,14 +48,26 @@ def student_add(request):
                 student_save.user = request.user
                 student_save.save()
                 student_id = student_save.id
+
+                user = User.objects.create_user(
+                    username = student_save.id,
+                    password = student_save.password,
+                    email = student_save.email
+                )
+                user.save()
                 
+                group = Group.objects.get(name='Student')
+                user.groups.add(group)
+
                 mother_details = request.session.pop('mother_form')
                 mother_uncommitted = parent_form(mother_details).save(commit=False)
                 mother_uncommitted.related_student_id = student_id
+                mother_uncommitted.relation = 'mom'
                 
                 father_details = request.session.pop('father_form')
                 father_uncommitted = parent_form(father_details).save(commit=False)
                 father_uncommitted.related_student_id = student_id
+                father_uncommitted.relation = 'dad'
                 
                 siblings_details = request.session.pop('siblings_form')
                 for detail in siblings_details:
@@ -63,16 +87,50 @@ def student_add(request):
 
                 mother_uncommitted.save()
                 father_uncommitted.save()
+
+                #Register mother to system
+                mother_register = User.objects.create_user(
+                    username = mother_uncommitted.email,
+                    password = mother_uncommitted.password,
+                    email = mother_uncommitted.email
+                )
+                mother_register.save()
+                
+                group = Group.objects.get(name='Guardian')
+                mother_register.groups.add(group)
+
+                #Register father to system
+                father_register = User.objects.create_user(
+                    username = father_uncommitted.email,
+                    password = father_uncommitted.password,
+                    email = father_uncommitted.email
+                )
+                father_register.save()
+                
+                group = Group.objects.get(name='Guardian')
+                father_register.groups.add(group)
+
                 transportation_uncommitted.save()
                 
-                send_mail(
-                    'Registration Successful',
-                    'Dear '+student_save.name+' '+student_save.surname+',\nYou have successfully registered to NEC \nYour password is '+student_save.password,
-                    'necstajnoreply@gmail.com',
-                    [student_save.email],
-                    fail_silently=False,
-                )
+                #Send a mail to student
+                _sendMail(subject='Registration Successful',
+                          message='Dear '+student_save.name+' '+student_save.surname+',\nYou have successfully registered to NEC \nYour username is your ID: '+str(student_save.id)+'\nYour password is: '+student_save.password,
+                          toEmail=student_save.email)
                 
+                # #Send a mail to mother
+                # _sendMail(subject='Registration Successful',
+                #           message='Dear '+mother_uncommitted.name+' '+mother_uncommitted.surname+',\nRegistration of '+student_save.name+' '+student_save.surname+' is complete.  \nYour username is your ID '+mother_uncommitted.id+'\nYour password is '+mother_uncommitted.password,
+                #           toEmail=mother_uncommitted.email)
+                
+                # #Send a mail to father
+                # _sendMail(subject='Registration Successful',
+                #           message='Dear '+father_uncommitted.name+' '+father_uncommitted.surname+',\nRegistration of '+student_save.name+' '+student_save.surname+' is complete.  \nYour username is your ID '+father_uncommitted.id+'\nYour password is '+father_uncommitted.password,
+                #           toEmail=father_uncommitted.email)
+
+                return JsonResponse({'success':True,
+                                     'pk': student_save.id,
+                                     'action': 'add',
+                                     'status': 'success'})
             else:
                 error = {
                     'error': {0 : "Please fill all the forms"}
@@ -86,7 +144,10 @@ def student_add(request):
                 request.session['student_form'] = request.POST.copy()
                 request.session['1'] = True
                 return JsonResponse({'success':True})
-        
+            else:
+                print("ERROR")
+                return JsonResponse({'error':student_form_request.errors})
+
         elif buttonName == 'submit_parent_details':
             print('rn in submit parents')
             mother_form_request = parent_form(request.POST,request.FILES or None, prefix="mother")
@@ -161,6 +222,9 @@ def student_add(request):
             transportation_form_request = transportation_form()
             siblingFormset = siblingFormset(prefix="sibling")
             pickupBackupFormset = pickupBackupFormset(prefix="pickup")
+            request.session['1'] = False
+            request.session['2'] = False
+            request.session['3'] = False
     return render(request, 'preregistration/student_add.html', {'student_form': student_form_request,
                                                                         'mother_form': mother_form_request,
                                                                         'dad_form': dad_form_request,
@@ -187,7 +251,10 @@ def student_add(request):
     #     student_form_request = student_information_form()
     # return render(request, 'preregistration/student_information.html', {'student_form': student_form_request})
 
+@login_required
+@permission_required('preregistration.edit_student', raise_exception=True)
 def student_edit(request):
+    
     siblingFormset = modelformset_factory(sibling, form=sibling_form ,extra=0)
     pickupBackupFormset = modelformset_factory(pickup_backup, form=pickup_backup_form ,extra=0)
     
@@ -226,10 +293,10 @@ def student_edit(request):
                 
                 if request.session.pop('3',False) == True:
                     transportation_details = request.session.pop('transportation_form')
-                    transportation_uncommitted = transportation_form(transportation_details,instance=transportation_query).save()
+                    transportation_uncommitted = transportation_form(transportation_details, instance=transportation_query).save()
                     
                     pickup_details = request.session.pop('pickup_backups')
-                    pickupBackupFormset(pickup_details,queryset=pickup_backup_query, prefix="pickup").save()
+                    pickupBackupFormset(pickup_details, queryset=pickup_backup_query, prefix="pickup").save()
 
                 
                 # send_mail(
@@ -240,11 +307,11 @@ def student_edit(request):
                 #     fail_silently=False,
                 # )
                 
-                student_query = student.objects.filter(id=q)
-                return render(request, 'preregistration/student_success.html', {'student': student_query,
-                                                                                'action': 'edit',
-                                                                                'nbar': 'student' })
-                
+                return JsonResponse({'success':True,
+                                     'pk': q,
+                                     'action': 'edit',
+                                     'status': 'success'})
+            
             else:
                 error = {
                     'error': {0 : "Please fill all the forms"}
@@ -311,7 +378,11 @@ def student_edit(request):
         #siblingFormset = siblingFormset(prefix="sibling")
         
         #pickupBackupFormset = pickupBackupFormset(prefix="pickup")
-        return render(request, 'preregistration/student_add.html', {'student_form': student_form_request,
+        
+        request.session['1'] = False
+        request.session['2'] = False
+        request.session['3'] = False
+        return render(request, 'preregistration/student_edit.html', {'student_form': student_form_request,
                                                                     'mother_form': mother_form_request,
                                                                     'dad_form': dad_form_request,
                                                                     'transportation_form': transportation_form_request,
@@ -319,8 +390,10 @@ def student_edit(request):
                                                                     'pickup_backup_forms': pickupBackupEditFormset,
                                                                     'nbar': 'student'})
 
-def form_success(request,pk,code):
+@login_required
+def form_complete(request,pk,action,status):
     student_details = get_object_or_404(student, pk=pk)
-    return render(request, 'preregistration/form_success.html', {'student':student_details})
+    return render(request, 'preregistration/student_success.html', {'student':student_details,
+                                                                    'action': action})
 
  

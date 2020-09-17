@@ -512,7 +512,7 @@
         <input type="submit" id="complete_registration" class="next btn btn-outline-dark submit"
             value="Complete Registration" />
     </div>
-
+    
 <script>
     var current_fs, next_fs, previous_fs;
     var current_step, next_step, previous_step;
@@ -605,7 +605,9 @@
                     }, 200);
                 } else if (response['success']) {
                     console.log('succesfully submitted.');
-
+                    if(button_id == '#complete_registration'){
+                        window.location.replace('/preregistration/'+response.pk+'/'+response.action+'/'+response.status);
+                    }
                     if ($(tabButton).html().indexOf('✓') == -1) {
                         $(tabButton).append(' ✓');
                         $(tabButton).addClass('successful_form');

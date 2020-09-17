@@ -3,8 +3,11 @@ from django.utils import timezone
 from django.shortcuts import redirect, get_object_or_404
 from .forms import student_search
 from preregistration.models import student
+from django.contrib.auth.decorators import permission_required, login_required
 import pdb
 
+@login_required
+@permission_required('preregistration.view_student', raise_exception=True)
 def student_list(request):
     if request.method == 'GET' and 'q' in request.GET:
         q = request.GET.get('q')

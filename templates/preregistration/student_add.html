@@ -606,7 +606,12 @@
                     }, 200);
                 } else if (response['success']) {
                     console.log('succesfully submitted.');
-
+                    if(button_id == '#complete_registration'){
+                        window.location.replace('/preregistration/'+response.pk+'/'+response.action+'/'+response.status);
+                    }
+                    $("html, body").animate({
+                        scrollTop: $("#step_btns").scrollTop()
+                    }, 200);
                     if ($(tabButton).html().indexOf('✓') == -1) {
                         $(tabButton).append(' ✓');
                         $(tabButton).addClass('successful_form');

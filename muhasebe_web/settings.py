@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'main',
     'student',
     'preregistration',
-    
-    'django_cleanup.apps.CleanupConfig'
+    'django_cleanup.apps.CleanupConfig',
+    'register.apps.RegisterConfig',
 ]
 
 MIDDLEWARE = [

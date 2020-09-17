@@ -37,7 +37,7 @@
         </ul>
     </div>
     <div class="mx-auto order-0">
-        <a class="navbar-brand" href="#"> 
+        <a class="navbar-brand" href="{% url 'home' %}"> 
         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Near_East_University.svg/1200px-Near_East_University.svg.png" 
         width="30" height="30" class="d-inline-block align-top" alt=""> 2020-2021 Near East College
         </a>
@@ -52,7 +52,7 @@
                 <a class="nav-link nav-details" style="color:white;" href="#">Hello {{ user.username }},</a>
             </li>
             <li class="nav-item">
-              {% if perms.preregistration.add_user %} <a class="nav-link" href="#">Register User</a> {% endif %}
+              {% if perms.preregistration.add_user %} <a class="nav-link" href="{% url 'register' %}">Register User</a> {% endif %}
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'logout' %}">Logout</a>
