@@ -4,7 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
+Django = "*"
+django-formtools = "*"
+pillow = "*"
+django-crispy-forms = "*"
+django-client-side-image-cropping = "*"
+django-cleanup = "*"
 
 [dev-packages]
 

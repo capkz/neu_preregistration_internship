@@ -1,0 +1,81 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>    
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    {% block scripts %}
+    {% endblock scripts %}
+  </head>
+  <body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item {% if nbar == 'home' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
+            </li>
+            {% if perms.preregistration.add_student %}
+            <li class="nav-item {% if nbar == 'student' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'student_add' %}">Preregistration</a>
+            </li>
+            {% endif %}
+
+            {% if perms.preregistration.view_student %}
+            <li class="nav-item {% if nbar == 'student_list' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'student_list' %}">Students</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="mx-auto order-0">
+        <a class="navbar-brand" href="{% url 'home' %}"> 
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Near_East_University.svg/1200px-Near_East_University.svg.png" 
+        width="30" height="30" class="d-inline-block align-top" alt=""> 2020-2021 Near East College
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item active">
+                <a class="nav-link nav-details" style="color:white;" href="#">Hello {{ user.username }},</a>
+            </li>
+            <li class="nav-item">
+              {% if perms.preregistration.add_user %} <a class="nav-link" href="{% url 'register' %}">Register User</a> {% endif %}
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Log in<span class="sr-only">(current)</span></a>
+            </li>
+          {% endif %}
+        </ul>
+    </div>
+</nav>
+
+
+    <section>
+      <div class="container content-container">
+        {% block content %}
+        {% endblock content %}
+      </div>
+    </section>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>
